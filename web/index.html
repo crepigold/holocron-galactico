@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Holocrón Galáctico</title>
+<!--FUENTES-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=IBM+Plex+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap">
+<!--/FUENTES-->
+<!--CSS--><link rel="stylesheet" href="estilo.css"><!--/CSS-->
+</head>
+<body>
+<!--CUERPO-->
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#inicio"><span class="brand-mark" aria-hidden="true"></span>Holocrón</a>
+    <nav class="nav" id="nav" aria-label="Secciones"></nav>
+    <div class="tools">
+      <button class="tool-btn" id="prop-btn" type="button" aria-pressed="true">Propuestas: visibles</button>
+      <button class="tool-btn" id="theme-btn" type="button">Tema: sistema</button>
+    </div>
+  </div>
+</header>
+<main id="app"></main>
+<footer class="footer">
+  <div class="wrap">
+    <span>Holocrón Galáctico · Biblia del canon · reconstruida el 2 oct 2026 desde crepi-alkam.neocities.org</span>
+    <span>Año 0 = Batalla de Orion-34 (calendario propuesto)</span>
+  </div>
+</footer>
+<!--/CUERPO-->
+<!--JS-->
+<script src="datos/tomos.js"></script>
+<script src="datos/facciones.js"></script>
+<script src="datos/personajes.js"></script>
+<script src="datos/mundo.js"></script>
+<script src="exportar.js"></script>
+<script src="app.js"></script>
+<!--/JS-->
+</body>
+</html>

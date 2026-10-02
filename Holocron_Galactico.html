@@ -1,0 +1,2585 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Holocrón Galáctico</title>
+<!--FUENTES-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=IBM+Plex+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap">
+<!--/FUENTES-->
+<style>
+/* Layout: una biblioteca de holocrones. Estante de tomos como lomos verticales,
+   lector a ~66 caracteres con índice lateral y fichas como lecturas de datos en monoespaciada. */
+:root {
+  --bg: #0c0e13;
+  --bg-2: #13161e;
+  --bg-3: #1b1f29;
+  --fg: #e7e3d7;
+  --fg-2: #a39f93;
+  --line: #2a2f3b;
+  --brass: #d3aa55;
+  --brass-soft: rgba(211, 170, 85, .13);
+  --prop: #7cc4d6;
+  --prop-soft: rgba(124, 196, 214, .12);
+  --auth: #9cc58a;
+  --auth-soft: rgba(156, 197, 138, .13);
+  --star: 231, 227, 215;
+
+  --f-display: 'Cinzel', 'Trajan Pro', 'Palatino Linotype', Georgia, serif;
+  --f-body: 'Literata', Georgia, 'Times New Roman', serif;
+  --f-mono: 'IBM Plex Mono', ui-monospace, Consolas, 'Courier New', monospace;
+
+  --step--1: .82rem;
+  --step-0: 1rem;
+  --step-1: 1.2rem;
+  --step-2: 1.55rem;
+  --step-3: 2.1rem;
+  --step-4: clamp(2.6rem, 6vw, 4.6rem);
+
+  --radius: 6px;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #eceef2; --bg-2: #f8f9fb; --bg-3: #e1e4ea; --fg: #1a1d25; --fg-2: #565c69; --line: #cdd2da;
+    --brass: #8a6418; --brass-soft: rgba(138, 100, 24, .11); --prop: #1d6b80; --prop-soft: rgba(29, 107, 128, .1);
+    --auth: #3f6b2b; --auth-soft: rgba(63, 107, 43, .1); --star: 40, 46, 60;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #eceef2; --bg-2: #f8f9fb; --bg-3: #e1e4ea; --fg: #1a1d25; --fg-2: #565c69; --line: #cdd2da;
+  --brass: #8a6418; --brass-soft: rgba(138, 100, 24, .11); --prop: #1d6b80; --prop-soft: rgba(29, 107, 128, .1);
+  --auth: #3f6b2b; --auth-soft: rgba(63, 107, 43, .1); --star: 40, 46, 60;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 var(--step-0)/1.6 var(--f-body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration-color: var(--brass); text-underline-offset: 3px; }
+a:hover { color: var(--brass); }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; border-radius: 2px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+img { max-width: 100%; }
+
+.wrap { max-width: 1180px; margin-inline: auto; padding-inline: 20px; }
+.label, .eyebrow {
+  font: 500 .72rem/1.3 var(--f-mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+.eyebrow { color: var(--brass); }
+.muted { color: var(--fg-2); }
+.mono { font-family: var(--f-mono); }
+
+/* ------------------------------------------------ barra superior */
+.topbar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 20;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-in { display: flex; align-items: center; gap: 18px; min-height: 56px; }
+.brand {
+  font: 700 1rem/1 var(--f-display);
+  letter-spacing: .12em;
+  text-decoration: none;
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 10px;
+}
+.brand-mark {
+  width: 18px; height: 18px; border: 1.5px solid var(--brass); transform: rotate(45deg);
+  display: grid; place-items: center;
+}
+.brand-mark::after { content: ''; width: 6px; height: 6px; background: var(--brass); }
+.nav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; flex: 1; min-width: 0; }
+.nav::-webkit-scrollbar { display: none; }
+.nav a {
+  font: 500 .78rem/1 var(--f-mono);
+  letter-spacing: .06em;
+  text-decoration: none;
+  padding: 9px 10px;
+  border-radius: 4px;
+  color: var(--fg-2);
+  white-space: nowrap;
+}
+.nav a:hover { color: var(--fg); background: var(--bg-3); }
+.nav a[aria-current="page"] { color: var(--fg); background: var(--brass-soft); }
+.tools { display: flex; gap: 6px; }
+.tool-btn {
+  font: 500 .72rem/1 var(--f-mono);
+  letter-spacing: .05em;
+  color: var(--fg-2);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 7px 9px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tool-btn:hover { color: var(--fg); border-color: var(--fg-2); }
+@media (max-width: 1000px) {
+  .topbar-in { flex-wrap: wrap; gap: 8px 12px; padding-block: 10px; }
+  .nav { order: 3; flex-basis: 100%; }
+  .tools { margin-left: auto; }
+}
+
+/* ------------------------------------------------ marcas de canon */
+.prop { border-bottom: 1px dotted var(--prop); cursor: help; }
+.hide-prop .prop { border-bottom: 0; }
+.badge {
+  display: inline-block;
+  font: 500 .64rem/1 var(--f-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 4px 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.b-o { color: var(--brass); background: var(--brass-soft); }
+.b-a { color: var(--auth); background: var(--auth-soft); }
+.b-p { color: var(--prop); background: var(--prop-soft); }
+.badges { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--fc, var(--fg-2)); flex: none; }
+.chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  font: 500 .74rem/1 var(--f-mono);
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--fg);
+  background: transparent;
+  cursor: pointer;
+}
+a.chip:hover, button.chip:hover { border-color: var(--fg-2); color: var(--fg); }
+button.chip[aria-pressed="true"] { background: var(--bg-3); border-color: var(--fg-2); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 500 .82rem/1 var(--f-mono);
+  letter-spacing: .04em;
+  padding: 12px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  background: var(--brass);
+  color: var(--bg);
+  border: 1px solid var(--brass);
+  cursor: pointer;
+}
+.btn:hover { color: var(--bg); filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+.btn.ghost:hover { border-color: var(--brass); color: var(--brass); filter: none; }
+
+/* ------------------------------------------------ portada */
+.hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); }
+.stars { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.hero-in { position: relative; padding-block: 72px 64px; display: grid; gap: 22px; }
+.hero-title {
+  font: 700 var(--step-4)/.98 var(--f-display);
+  letter-spacing: .04em;
+}
+.hero-title span { color: var(--brass); }
+.lede { font-size: var(--step-1); max-width: 40ch; line-height: 1.55; }
+.hero-meta { font: 400 .8rem/1.6 var(--f-mono); color: var(--fg-2); }
+.hero-meta b { color: var(--fg); font-weight: 500; }
+.cta { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.block { padding-block: 56px 8px; }
+.sec-head { display: grid; gap: 8px; margin-bottom: 26px; max-width: 68ch; }
+.sec-head h2 { font: 700 var(--step-2)/1.15 var(--f-display); letter-spacing: .03em; }
+.sec-head p { color: var(--fg-2); }
+
+/* balance de poder */
+.power { display: grid; gap: 10px; margin-bottom: 26px; }
+.power-bar { display: flex; height: 14px; border-radius: 3px; overflow: hidden; gap: 2px; }
+.power-bar span { background: var(--fc); display: block; }
+.power-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font: 400 .76rem/1.4 var(--f-mono); color: var(--fg-2); }
+.power-legend span { display: inline-flex; align-items: center; gap: 7px; font-variant-numeric: tabular-nums; }
+
+.status-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 14px; }
+.status {
+  display: grid; gap: 8px; align-content: start;
+  padding: 18px 18px 18px 20px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--fc);
+  border-radius: var(--radius);
+  text-decoration: none;
+}
+.status:hover { color: inherit; border-color: var(--fg-2); border-left-color: var(--fc); }
+.status h3 { font: 600 1.05rem/1.25 var(--f-body); display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.status p { font-size: .92rem; color: var(--fg-2); }
+.pill { font: 500 .68rem/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--fg); background: var(--bg-3); padding: 5px 7px; border-radius: 3px; white-space: nowrap; }
+
+/* estante de tomos */
+.shelf { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; align-items: end; }
+.spine {
+  position: relative;
+  height: var(--h, 320px);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  gap: 12px;
+  padding: 18px 8px 14px;
+  text-decoration: none;
+  background: linear-gradient(180deg, var(--bg-3), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: 4px 4px 2px 2px;
+  transition: transform .25s ease, border-color .25s ease;
+}
+.spine:hover { transform: translateY(-6px); border-color: var(--brass); color: inherit; }
+.spine-bands { position: absolute; top: 0; left: 0; right: 0; height: 4px; display: flex; border-radius: 4px 4px 0 0; overflow: hidden; }
+.spine-bands i { flex: 1; background: var(--fc); }
+.spine-num { font: 700 1.6rem/1 var(--f-display); color: var(--brass); }
+.spine-title {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font: 600 1rem/1.15 var(--f-display);
+  letter-spacing: .05em;
+  text-align: left;
+  max-height: 100%;
+  overflow: hidden;
+}
+.spine-years { font: 400 .66rem/1.3 var(--f-mono); color: var(--fg-2); text-align: center; font-variant-numeric: tabular-nums; }
+@media (max-width: 820px) {
+  .shelf { grid-template-columns: 1fr; gap: 8px; }
+  .spine { height: auto; grid-template-columns: 56px 1fr; grid-template-rows: auto auto; justify-items: start; align-items: center; gap: 2px 12px; padding: 16px 14px 14px; }
+  .spine-num { grid-row: span 2; justify-self: center; }
+  .spine-title { writing-mode: horizontal-tb; transform: none; font-size: 1.02rem; }
+  .spine-years { text-align: left; }
+  .spine:hover { transform: none; }
+}
+
+.legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 14px; }
+.legend-item { display: grid; gap: 8px; padding: 16px 0; border-top: 1px solid var(--line); }
+.legend-item p { font-size: .92rem; color: var(--fg-2); }
+
+/* ------------------------------------------------ lector de tomos */
+.page { padding-block: 34px 80px; }
+.crumbs { font: 400 .76rem/1.4 var(--f-mono); color: var(--fg-2); margin-bottom: 26px; }
+.crumbs a { text-decoration: none; }
+.tomo-head { display: grid; grid-template-columns: auto 1fr; gap: 26px; align-items: end; padding-bottom: 28px; border-bottom: 1px solid var(--line); margin-bottom: 34px; }
+.tomo-num { font: 700 clamp(4rem, 12vw, 7.5rem)/.8 var(--f-display); color: var(--brass); letter-spacing: .02em; }
+.tomo-head h1 { font: 700 var(--step-3)/1.1 var(--f-display); letter-spacing: .02em; margin: 8px 0 14px; }
+@media (max-width: 560px) { .tomo-head { grid-template-columns: 1fr; gap: 6px; } }
+
+.reader-grid { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; align-items: start; }
+.toc { position: sticky; top: 84px; display: grid; gap: 14px; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: c; }
+.toc li a {
+  display: grid; grid-template-columns: 22px 1fr; gap: 6px;
+  font-size: .88rem; line-height: 1.35;
+  text-decoration: none; color: var(--fg-2);
+  padding: 6px 8px; border-radius: 4px;
+}
+.toc li a:hover { color: var(--fg); background: var(--bg-3); }
+.toc li a span { font: 500 .72rem/1.6 var(--f-mono); color: var(--brass); }
+.toc-pager { display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid var(--line); }
+.toc-pager a { font: 400 .76rem/1.4 var(--f-mono); text-decoration: none; color: var(--fg-2); }
+@media (max-width: 900px) {
+  .reader-grid { grid-template-columns: 1fr; gap: 26px; }
+  .toc { position: static; padding: 14px; background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); }
+}
+
+.prose { max-width: 68ch; min-width: 0; }
+.record { margin: 0 0 34px; padding: 18px 20px; background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); display: grid; gap: 10px; }
+.record figcaption { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.record blockquote { margin: 0; font-style: italic; line-height: 1.65; }
+.record .note { font: 400 .76rem/1.5 var(--f-mono); color: var(--fg-2); }
+.synopsis { font-size: var(--step-1); line-height: 1.55; margin-bottom: 44px; color: var(--fg); }
+
+.chapter { padding-top: 10px; margin-bottom: 48px; }
+.chapter header { display: grid; gap: 6px; margin-bottom: 20px; }
+.chapter h2 { font: 700 var(--step-2)/1.15 var(--f-display); letter-spacing: .02em; }
+.ch-src { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.chapter > p { font-size: 1.07rem; line-height: 1.78; margin-bottom: 1.05em; hyphens: auto; }
+.chapter > p:first-of-type::first-letter {
+  font: 700 3.1em/.85 var(--f-display);
+  float: left;
+  margin: .06em .1em 0 0;
+  color: var(--brass);
+}
+.divider { border: 0; height: 1px; background: var(--line); margin: 52px 0 40px; }
+
+.sheet { display: grid; gap: 14px; margin-bottom: 40px; }
+.sheet h2 { font: 700 var(--step-2)/1.15 var(--f-display); letter-spacing: .02em; }
+.facts { display: grid; grid-template-columns: 170px minmax(0, 1fr); margin: 0; border-top: 1px solid var(--line); }
+.facts dt, .facts dd { padding: 12px 0; border-bottom: 1px solid var(--line); margin: 0; }
+.facts dt { font: 500 .72rem/1.6 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--fg-2); padding-right: 14px; }
+.facts dd { font-size: .96rem; }
+@media (max-width: 560px) {
+  .facts { grid-template-columns: 1fr; }
+  .facts dt { border-bottom: 0; padding-bottom: 0; }
+}
+.hooks { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
+.hooks li::marker { color: var(--brass); }
+.pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 30px; }
+.pager a {
+  display: grid; gap: 4px; padding: 16px; text-decoration: none;
+  border: 1px solid var(--line); border-radius: var(--radius);
+}
+.pager a:hover { border-color: var(--brass); color: inherit; }
+.pager a.next { text-align: right; grid-column: 2; }
+.pager strong { font: 600 1rem/1.3 var(--f-display); }
+
+/* ------------------------------------------------ facciones */
+.fac-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 14px; }
+.fac-card {
+  display: grid; gap: 10px; align-content: start;
+  padding: 22px; text-decoration: none;
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius);
+  position: relative; overflow: hidden;
+}
+.fac-card::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--fc); }
+.fac-card:hover { border-color: var(--fg-2); color: inherit; }
+.fac-card h3 { font: 700 1.3rem/1.2 var(--f-display); letter-spacing: .02em; }
+.fac-card p { font-size: .92rem; color: var(--fg-2); }
+.fac-card .lema { font-style: italic; color: var(--fg); }
+
+.fac-head { display: grid; gap: 12px; padding-bottom: 26px; margin-bottom: 30px; border-bottom: 1px solid var(--line); position: relative; }
+.fac-head::before { content: ''; width: 64px; height: 4px; background: var(--fc); border-radius: 2px; }
+.fac-head h1 { font: 700 var(--step-3)/1.1 var(--f-display); letter-spacing: .02em; }
+.fac-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 48px; align-items: start; }
+.fac-side { position: sticky; top: 84px; display: grid; gap: 16px; padding: 18px; background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); }
+.fac-side dl { margin: 0; display: grid; gap: 12px; }
+.fac-side dt { font: 500 .68rem/1.4 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--fg-2); }
+.fac-side dd { margin: 2px 0 0; font-size: .92rem; }
+@media (max-width: 940px) { .fac-layout { grid-template-columns: 1fr; } .fac-side { position: static; } }
+.fac-main { display: grid; gap: 44px; min-width: 0; max-width: 72ch; }
+.fac-sec { display: grid; gap: 14px; }
+.fac-sec h2 { font: 700 var(--step-2)/1.15 var(--f-display); letter-spacing: .02em; }
+.era-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.era-list li { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 14px; padding-bottom: 18px; position: relative; }
+.era-list li::before { content: ''; width: 9px; height: 9px; margin-top: 8px; border: 2px solid var(--fc); border-radius: 50%; background: var(--bg); z-index: 1; }
+.era-list li::after { content: ''; position: absolute; left: 6px; top: 18px; bottom: 0; width: 1px; background: var(--line); }
+.era-list li:last-child::after { display: none; }
+.era-list h3 { font: 600 1rem/1.4 var(--f-body); margin-bottom: 3px; }
+.era-list p { font-size: .95rem; color: var(--fg-2); }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; min-width: 520px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 500 .68rem/1.4 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--fg-2); background: var(--bg-2); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-family: var(--f-mono); font-size: .8rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.unit-list { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.unit { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.unit h3 { font: 600 1rem/1.4 var(--f-body); }
+.unit p { font-size: .94rem; color: var(--fg-2); }
+@media (max-width: 560px) { .unit { grid-template-columns: 1fr; gap: 4px; } }
+.rel { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.rel:first-child { border-top: 1px solid var(--line); }
+.rel a { font-weight: 600; text-decoration: none; display: inline-flex; gap: 8px; align-items: center; }
+.rel p { flex-basis: 100%; font-size: .93rem; color: var(--fg-2); }
+.play { padding: 18px 20px; background: var(--brass-soft); border-radius: var(--radius); display: grid; gap: 10px; }
+
+/* ------------------------------------------------ personajes */
+.toolbar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+.people { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 12px; align-items: start; }
+.person { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); border-left: 3px solid var(--fc); }
+.person summary { list-style: none; cursor: pointer; padding: 16px 18px; display: grid; gap: 4px; }
+.person summary::-webkit-details-marker { display: none; }
+.person summary h3 { font: 700 1.12rem/1.25 var(--f-display); letter-spacing: .02em; display: flex; justify-content: space-between; gap: 10px; }
+.person summary h3::after { content: '+'; font: 400 1.1rem/1 var(--f-mono); color: var(--fg-2); }
+.person[open] summary h3::after { content: '–'; }
+.person summary p { font-size: .88rem; color: var(--fg-2); }
+.person .body { padding: 0 18px 18px; display: grid; gap: 12px; }
+.person .body p { font-size: .95rem; }
+.person.flash { border-color: var(--brass); }
+.kv { font: 400 .76rem/1.5 var(--f-mono); color: var(--fg-2); }
+.kv b { color: var(--fg); font-weight: 500; }
+
+/* ------------------------------------------------ batallas y cronología */
+.rows { display: grid; border-top: 1px solid var(--line); }
+.row { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 20px; padding: 20px 0; border-bottom: 1px solid var(--line); }
+.row.flash { background: var(--brass-soft); }
+.row-year { font: 500 .9rem/1.4 var(--f-mono); color: var(--brass); font-variant-numeric: tabular-nums; }
+.row h3 { font: 700 1.15rem/1.3 var(--f-display); letter-spacing: .02em; margin-bottom: 8px; }
+.row .facts { grid-template-columns: 130px minmax(0, 1fr); border-top: 0; }
+.row .facts dt, .row .facts dd { padding: 6px 0; border-bottom: 0; }
+@media (max-width: 560px) { .row { grid-template-columns: 1fr; gap: 6px; } .row .facts { grid-template-columns: 1fr; } }
+
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; }
+.timeline li { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.timeline .t-year { font: 500 .82rem/1.5 var(--f-mono); color: var(--brass); font-variant-numeric: tabular-nums; }
+.timeline .t-body { display: grid; gap: 6px; }
+.timeline .t-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font: 400 .72rem/1 var(--f-mono); color: var(--fg-2); }
+.timeline .t-meta a { text-decoration: none; }
+.tl-era { font: 700 .95rem/1.3 var(--f-display); letter-spacing: .06em; color: var(--fg-2); padding: 26px 0 8px; border-bottom: 1px solid var(--line); }
+@media (max-width: 560px) { .timeline li { grid-template-columns: 1fr; gap: 4px; } }
+
+/* ------------------------------------------------ mapa */
+.map-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
+@media (max-width: 940px) { .map-layout { grid-template-columns: 1fr; } }
+.map-box { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); }
+.map-box svg { display: block; width: 100%; min-width: 640px; height: auto; }
+.map-ring { fill: none; stroke: var(--line); stroke-width: .25; }
+.map-grid { stroke: var(--line); stroke-width: .12; }
+.map-sphere { stroke-width: .3; }
+.map-pt { cursor: pointer; }
+.map-pt circle.core { stroke: var(--bg); stroke-width: .5; }
+.map-pt circle.halo { fill: transparent; stroke: var(--brass); stroke-width: .4; opacity: 0; }
+.map-pt.sel circle.halo, .map-pt:focus circle.halo { opacity: 1; }
+.map-pt:focus { outline: none; }
+.map-pt text { font: 500 2.5px var(--f-mono); fill: var(--fg); letter-spacing: .05px; }
+.map-pt.dim { opacity: .22; }
+.map-route { fill: none; stroke: var(--fg-2); stroke-width: .3; stroke-dasharray: 1 1; }
+.map-note { font: 400 2.2px var(--f-mono); fill: var(--fg-2); }
+.map-panel { display: grid; gap: 12px; padding: 18px; background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); }
+.map-panel h3 { font: 700 1.2rem/1.25 var(--f-display); }
+.map-panel p { font-size: .94rem; }
+select {
+  font: 500 .8rem/1 var(--f-mono); color: var(--fg); background: var(--bg-2);
+  border: 1px solid var(--line); border-radius: 4px; padding: 9px 10px;
+  max-width: 100%; min-width: 0;
+}
+.map-controls select { flex: 1 1 220px; max-width: 460px; }
+.map-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 14px; }
+.map-controls label { font: 500 .72rem/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--fg-2); }
+
+/* ------------------------------------------------ glosario y canon */
+.gloss { display: grid; grid-template-columns: 230px minmax(0, 1fr); margin: 0; border-top: 1px solid var(--line); }
+.gloss dt, .gloss dd { margin: 0; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.gloss dt { font-weight: 600; padding-right: 16px; display: grid; gap: 6px; align-content: start; justify-items: start; }
+.gloss dd { color: var(--fg-2); font-size: .96rem; }
+@media (max-width: 640px) { .gloss { grid-template-columns: 1fr; } .gloss dt { border-bottom: 0; padding-bottom: 4px; } }
+.qa { display: grid; border-top: 1px solid var(--line); }
+.qa div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.qa dt { font-weight: 600; font-size: .95rem; }
+.qa dd { margin: 0; color: var(--fg-2); font-size: .95rem; }
+@media (max-width: 640px) { .qa div { grid-template-columns: 1fr; gap: 4px; } }
+.checklist { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--line); }
+.checklist li { padding: 12px 0 12px 28px; border-bottom: 1px solid var(--line); position: relative; font-size: .95rem; }
+.checklist li::before { content: ''; position: absolute; left: 2px; top: 16px; width: 12px; height: 12px; border: 1.5px solid var(--fc, var(--prop)); border-radius: 2px; }
+.canon-grid { display: grid; gap: 52px; max-width: 900px; }
+.export { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.toast { font: 400 .78rem/1.4 var(--f-mono); color: var(--auth); min-height: 1.4em; }
+.copy-fallback { width: 100%; min-height: 160px; font: 400 .75rem/1.5 var(--f-mono); background: var(--bg-2); color: var(--fg); border: 1px solid var(--line); border-radius: 4px; padding: 10px; }
+
+.footer { border-top: 1px solid var(--line); padding-block: 26px 40px; margin-top: 40px; font: 400 .74rem/1.6 var(--f-mono); color: var(--fg-2); }
+.footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
+
+</style>
+</head>
+<body>
+<!--CUERPO-->
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#inicio"><span class="brand-mark" aria-hidden="true"></span>Holocrón</a>
+    <nav class="nav" id="nav" aria-label="Secciones"></nav>
+    <div class="tools">
+      <button class="tool-btn" id="prop-btn" type="button" aria-pressed="true">Propuestas: visibles</button>
+      <button class="tool-btn" id="theme-btn" type="button">Tema: sistema</button>
+    </div>
+  </div>
+</header>
+<main id="app"></main>
+<footer class="footer">
+  <div class="wrap">
+    <span>Holocrón Galáctico · Biblia del canon · reconstruida el 2 oct 2026 desde crepi-alkam.neocities.org</span>
+    <span>Año 0 = Batalla de Orion-34 (calendario propuesto)</span>
+  </div>
+</footer>
+<!--/CUERPO-->
+<script>/* datos/tomos.js */
+/*
+  HOLOCRÓN GALÁCTICO — Los Tomos
+  -------------------------------------------------------------
+  Convenciones de canon:
+    base: 'O' = texto Original de la web (2025)
+          'A' = decisión del Autor (respuestas del 2 oct 2026)
+          'P' = Propuesta de reconstrucción (pendiente de aprobar)
+    Dentro del texto, {entre llaves} = detalle propuesto.
+  Calendario (propuesta): año 0 = Batalla de Orion-34.
+    AO = antes de Orion · DO = después de Orion.
+*/
+window.LORE = window.LORE || {};
+
+LORE.tomos = [
+  /* ============================================================ TOMO I */
+  {
+    id: 'tomo-1',
+    num: 'I',
+    titulo: 'La Guerra de las Galaxias Fragmentadas',
+    periodo: 'c. 12 AO – 1 DO',
+    anios: [-12, 1],
+    original: 'El Imperio de Rilur, con su poderío de clones y droides, avanza imparable. La República de Vinica forja una alianza desesperada con los Caballeros de la Sintonía. En la Batalla de Orion-34, el maestro Saelen Vharr derrota a Lord Veylan, pero la victoria es agridulce: el este galáctico, incluyendo Dubitsa, cae. Vinica firma un tratado humillante para sobrevivir.',
+    sinopsis: 'El Reactor Oscuro da a Rilur ejércitos casi gratuitos y una expansión sin freno. Vinica, Dubitsa y los Caballeros de la Sintonía se unen y vencen en Lolop, pero el Imperio rodea el frente: el este cae entero y Vinica se rinde con un tratado humillante.',
+    capitulos: [
+      {
+        titulo: 'El fuego de Raqut',
+        base: 'A P',
+        texto: `
+Durante siglos, el Imperio de Rilur había sido la fuerza dominante de la galaxia. Su doctrina se resumía en dos principios que cualquier súbdito sabía recitar: orden y poder. Pero lo que convirtió a aquel imperio antiguo en una marea imparable no fue su doctrina, sino una máquina.
+
+En el mundo de Raqut, {los científicos del Imperio, los mismos que más tarde formarían el núcleo de los Nighul,} lograron encender el Reactor Oscuro. Fuera de Rilur nadie llegó a comprender del todo cómo funcionaba. Lo que sí comprendió la galaxia fueron sus consecuencias: energía y recursos casi ilimitados a un coste casi nulo. Las fundiciones nunca se apagaban, los tanques de clonación trabajaban sin descanso y las cadenas de montaje fabricaban droides de combate por millones.
+
+Un ejército que no cuesta nada no necesita volver a casa. Bajo el {Emperador Sarkon}, Rilur dejó de conquistar sistema a sistema y empezó a avanzar por frentes enteros. Las crónicas de la época describen cielos cubiertos de flotas de desembarco y mundos que se rendían en cuanto veían las legiones de clones en órbita, antes de que se disparara un solo tiro. Los cronistas llamarían a aquella época la Guerra de las Galaxias Fragmentadas: una galaxia rota en mil frentes, todos retrocediendo ante el mismo enemigo.
+
+El reactor tuvo otra consecuencia, más silenciosa. Su energía no era limpia, sino alterada, y al extenderse por la galaxia alteraba también la Sintonía Universal, la energía que conecta todas las cosas. En el santuario de Riqtom, los Caballeros de la Sintonía la sintieron desafinarse como una cuerda tensada hasta el límite. Entonces comprendieron que aquello ya no era una guerra entre estados. Si nadie detenía a Rilur, el desequilibrio acabaría rompiendo algo que nadie podría reparar.`
+      },
+      {
+        titulo: 'La alianza desesperada',
+        base: 'O A P',
+        texto: `
+La República de Vinica fue la primera gran potencia que entendió que no podía ganar sola. Su Senado, acostumbrado a resolverlo todo con comercio y diplomacia, vio cómo sus rutas se cerraban una tras otra y cómo sus flotas de defensa caían ante un enemigo que reponía sus pérdidas en semanas.
+
+La decisión que tomó entonces dividió a la República durante generaciones: Vinica pidió ayuda a los Caballeros de la Sintonía. La orden era antigua, reservada y desconfiaba de la política. Muchos la conocían por su otro nombre, los Caballeros Ocultos, porque rara vez se dejaban ver fuera de sus santuarios. Hacía siglos que unos monjes guerreros no aceptaban luchar al lado de un Senado.
+
+Aceptaron porque el problema no era Vinica ni su libertad, sino el reactor. Los Caballeros que respondieron a la llamada iban encabezados por el maestro Saelen Vharr, {y a su lado combatía un discípulo joven y obstinado llamado Kemet}.
+
+En el este, el Imperio de Dubitsa se unió también. Dubitsa era una civilización ancestral de científicos, filósofos y guerreros disciplinados, y sus estrategas habían hecho los cálculos: al ritmo de producción de Rilur, el este caería en una década. Así nació la coalición de Vinica, Dubitsa y la Sintonía contra el expansionismo de Rilur. Su objetivo era detener al Imperio en el único lugar donde todavía era posible: el sistema Orion-34, en el planeta Lolop.`
+      },
+      {
+        titulo: 'Lolop',
+        base: 'O A P',
+        texto: `
+{Orion-34 era el cruce de rutas entre el núcleo imperial y los mundos del este. Quien lo controlara controlaba el acceso a Dubitsa, a los principados orientales y a buena parte del comercio de Vinica.} Lolop, su planeta principal, fue el escenario de la mayor batalla de la época.
+
+El ejército de Rilur estaba al mando de Lord Veylan, un señor de la guerra imperial {con fama de no haber perdido nunca una campaña}. Veylan no tenía poderes de la Sintonía ni los necesitaba. Tenía clones y droides suficientes para cubrir el planeta y la paciencia de quien sabe que el enemigo se agotará antes que él.
+
+{La batalla duró semanas. Las flotas de Vinica y Dubitsa contuvieron el bloqueo orbital mientras, en la superficie, las legiones imperiales avanzaban sobre las posiciones de la coalición.} Fueron los Caballeros quienes rompieron el equilibrio: {Saelen Vharr dirigió un ataque directo contra el puesto de mando de Veylan, cruzando líneas que ninguna fuerza convencional habría podido atravesar.}
+
+El duelo entre el maestro y el señor de la guerra se convirtió en leyenda. Saelen Vharr derrotó a Lord Veylan, {que no sobrevivió al combate}. Sin su comandante, el ejército imperial de Lolop se desmoronó. Esa noche se celebró en los campamentos de la coalición la primera gran victoria contra Rilur en una generación. {Los cronistas tomarían esa batalla como el año cero de su calendario.}`
+      },
+      {
+        titulo: 'La caída del Este',
+        base: 'O P',
+        texto: `
+La victoria duró lo que tardó Rilur en reponer sus pérdidas.
+
+Mientras la coalición celebraba Lolop, el Reactor Oscuro seguía funcionando. {En pocos meses, las legiones destruidas en Orion-34 ya tenían reemplazo, y el Imperio cambió de estrategia: dejó de atacar el cruce que defendía la coalición y lo rodeó. Nuevas flotas cayeron sobre el este galáctico por rutas que nadie vigilaba.}
+
+El este galáctico cayó entero. Los principados orientales, que nunca habían sabido unirse, fueron conquistados uno por uno. Dubitsa resistió más que ninguno, pero tampoco pudo sostenerse: Rilur aniquiló y absorbió la antigua civilización. {Sus universidades se cerraron, su dinastía fue derrocada y los Pretoni que sobrevivieron pasaron a la clandestinidad.}
+
+Por eso la victoria de Lolop fue agridulce. Saelen Vharr había ganado la batalla, pero la coalición había perdido la guerra.`
+      },
+      {
+        titulo: 'La Paz de Hierro',
+        base: 'O P',
+        texto: `
+Sola y rodeada, la República de Vinica hizo lo único que le permitía seguir existiendo: firmó un tratado humillante para sobrevivir. {Los vinicanos lo llamarían la Paz de Hierro. Vinica conservó su Senado y su capital, pero cedió territorios, aceptó límites a su flota y empezó a pagar tributo al Imperio.} Muchos senadores lo consideraron una traición. Otros sostenían que era la única forma de que Vinica siguiera viva para la próxima guerra.
+
+Los Caballeros de la Sintonía pagaron el precio más alto. {Habían perdido a la mayoría de sus miembros en la campaña, y Rilur los declaró enemigos del Imperio. Saelen Vharr se retiró al santuario de Riqtom con los pocos supervivientes y allí dedicó sus últimos años a formar a Kemet, convencido de que el reactor acabaría devorando la galaxia si nadie lo apagaba.}
+
+Rilur había ganado. {Durante casi dos décadas} impuso una paz de orden y control. Más tarde, en tiempos de caos, muchos la echarían de menos.`
+      }
+    ],
+    ficha: {
+      facciones: ['rilur', 'vinica', 'dubitsa', 'sintonia', 'principados'],
+      personajes: ['sarkon', 'saelen-vharr', 'veylan', 'kemet'],
+      batallas: ['lolop'],
+      territorio: 'Rilur conquista todo el este galáctico, incluidos Dubitsa y los principados orientales. Vinica sobrevive, pero reducida y convertida en tributaria.',
+      muertes: 'Lord Veylan {(muere en el duelo)}. La mayoría de los Caballeros de la Sintonía. La antigua dinastía de Dubitsa {(derrocada)}.',
+      lideres: 'Ninguno nuevo. Rilur sigue bajo {Sarkon}.',
+      tecnologia: 'Reactor Oscuro en pleno funcionamiento: energía y recursos casi ilimitados, producción masiva de clones y droides.',
+      consecuencias: 'Empieza la paz impuesta de Rilur. La orden queda casi extinta y oculta en Riqtom. Dubitsa desaparece como estado.'
+    },
+    lugares: ['raqut', 'lolop', 'riqtom', 'vinica-prime', 'dubitsa-prime', 'rilur-prime'],
+    juegos: [
+      'Campaña RTS de la Batalla de Lolop jugable desde los dos bandos: hordas de Rilur (con reactor, sus unidades cuestan casi nada) contra una coalición escasa pero cualificada.',
+      'Misión de héroe: el asalto de Saelen Vharr al puesto de mando de Lord Veylan.'
+    ]
+  },
+
+  /* ============================================================ TOMO II */
+  {
+    id: 'tomo-2',
+    num: 'II',
+    titulo: 'El Despertar del Guardián',
+    periodo: 'c. 8 – 18 DO',
+    anios: [8, 18],
+    original: 'Una facción rebelde destruye una mega-instalación militar imperial, provocando la ira del Emperador. Introduce a su élite, los Nizghul. El legendario Kemet lidera un contraataque, venciendo al Emperador en un duelo mortal en el que ambos perecen. Antes de morir, Kemet envía a su discípulo Raqid a buscar al Guardián del Bosque.',
+    notaOriginal: '«Nizghul» es una errata de «Nighul» (decisión del autor, 2026).',
+    sinopsis: 'Bajo la paz impuesta, Kemet se convierte en leyenda. Una facción rebelde destruye la luna-forja de Rilit; el Emperador responde desatando a los Nighul. Kemet golpea el corazón del Imperio y muere junto al Emperador en un duelo. Su última orden: encontrar al Guardián del Bosque.',
+    capitulos: [
+      {
+        titulo: 'Los años del orden',
+        base: 'O P',
+        texto: `
+La paz de Rilur fue una paz vigilada. Los mundos conquistados recibían energía barata del Reactor Oscuro y, a cambio, aceptaban gobernadores imperiales, guarniciones de clones y patrullas de droides que no dormían nunca. Para muchos fue la época más estable que habían conocido. Para otros fue una jaula.
+
+{Saelen Vharr murió en Riqtom hacia el año 8 DO.} Su discípulo Kemet heredó lo que quedaba de la orden: un puñado de caballeros, un santuario escondido y una misión imposible. Con los años, Kemet se convirtió en una leyenda. {Aparecía donde la opresión imperial era más dura, desaparecía antes de que llegaran las legiones y en cada mundo que visitaba dejaba una célula de resistencia.} Su discípulo más cercano era Raqid, {paciente y metódico, el único a quien Kemet confiaba sus dudas.}
+
+{Esas dudas tenían que ver con una visión. La Sintonía, decía Kemet, había empezado a señalar a alguien que aún no sabía quién era: un guardián ligado a un bosque, capaz de hacer lo que ni él ni su maestro habían logrado.}`
+      },
+      {
+        titulo: 'La forja de Rilit',
+        base: 'O A P',
+        texto: `
+{En el año 18 DO,} una facción rebelde logró lo que parecía imposible. Su objetivo fue Rilit, la luna-forja convertida en la mayor instalación militar del Imperio: {astilleros, fábricas de droides y criaderos de clones alimentados directamente por la energía del reactor.}
+
+{Los rebeldes, veteranos de Lolop, exiliados de Dubitsa y saboteadores formados por las células de Kemet, pasaron meses infiltrados entre los trabajadores de la luna. Cuando actuaron, lo hicieron sobre las conducciones de energía. La reacción en cadena destruyó la instalación y Rilit ardió durante días.}
+
+Fue el golpe más duro que había recibido el Imperio desde Lolop, y no solo por las pérdidas materiales. {Por primera vez en dieciocho años, la galaxia vio que Rilur podía sangrar.} Y el Emperador montó en cólera.`
+      },
+      {
+        titulo: 'Los Nighul',
+        base: 'O A',
+        texto: `
+La respuesta del Emperador fue mostrar a la galaxia su élite: los Nighul.
+
+Los Nighul eran la élite de la élite. Se elegían por selección genética entre los mejores guerreros y los mejores clones del Imperio, y pasaban por un entrenamiento intenso e inhumano. Los que lo superaban acumulaban años de veteranía antes de recibir el título. Un solo Nighul equivalía a cien Nizarios, y los Nizarios ya eran la élite del ejército.
+
+Pero lo que los hacía de verdad temibles era su vínculo con el Reactor Oscuro. Su energía alterada los unía mental y energéticamente y potenciaba sus habilidades y sus poderes arcanos. {Combatían como un solo cuerpo y cada uno sabía lo que veían sus hermanos.} Los Caballeros usaban la Sintonía para buscar el equilibrio; el poder de los Nighul era esa misma Sintonía torcida por el reactor.
+
+Además, no eran solo guerreros. Los Nighul eran también los mejores científicos, filósofos e ingenieros de la galaxia. De ahí su prestigio: junto a los Nizarios eran el orgullo de Rilur.
+
+{Tras Rilit, el Emperador los lanzó contra los mundos sospechosos de rebeldía, y las células de resistencia cayeron una tras otra.}`
+      },
+      {
+        titulo: 'El duelo',
+        base: 'O P',
+        texto: `
+Kemet entendió que no podía ganar aquella guerra escondiéndose. {Si los Nighul seguían cazando, en un año no quedaría nadie a quien proteger.} Así que decidió golpear donde podía detenerlos: al propio Emperador.
+
+El legendario Kemet lideró un contraataque que llegó {hasta Rilur Prime}. {Las crónicas no coinciden sobre cómo logró entrar en la ciudadela imperial. Unas hablan de traidores en la guardia; otras, de un asalto desesperado de los últimos caballeros.} Todas coinciden en el final: Kemet y el Emperador se enfrentaron cara a cara.
+
+{El Emperador no era un anciano indefenso. Había sido el primero en unirse al reactor, y la energía alterada le daba una fuerza impropia de su edad.} Fue un duelo mortal. Kemet venció al Emperador, pero no salió con vida: los dos perecieron, y con ellos terminó una época.`
+      },
+      {
+        titulo: 'La última orden',
+        base: 'O A P',
+        texto: `
+Antes de morir, Kemet tuvo tiempo de dar una última orden. No fue un mensaje para la rebelión ni un plan de guerra, sino una misión para su discípulo Raqid: buscar al Guardián del Bosque.
+
+La muerte del Emperador hundió el centro del Imperio en una crisis enorme. {No había un heredero preparado y el trono quedó en disputa. Durante unas semanas de caos, gobernadores y comandantes de legión se vigilaron unos a otros. Al final se impuso el más fuerte: Korvan, Gran Mariscal de los ejércitos imperiales, que ocupó el trono con el respaldo de las legiones y de los Nighul.}
+
+{Korvan no era un visionario como su predecesor. Era un soldado duro e implacable, y heredaba un imperio que todavía conservaba el reactor. En Rilur Prime nadie imaginaba que la profecía de un caballero muerto acabaría con aquello.}
+
+Raqid salió de la capital entre el humo del duelo. Tardaría cinco años en cumplir la orden.`
+      }
+    ],
+    ficha: {
+      facciones: ['rilur', 'sintonia'],
+      personajes: ['kemet', 'raqid', 'sarkon', 'korvan', 'saelen-vharr'],
+      batallas: ['rilit-sabotaje', 'duelo-rilur-prime'],
+      territorio: 'Sin grandes cambios: Rilur sigue dominando. La luna-forja de Rilit queda destruida.',
+      muertes: '{Saelen Vharr (c. 8 DO, de vejez).} Kemet y el Primer Emperador ({Sarkon}), en el duelo.',
+      lideres: '{Korvan}, Gran Mariscal, se convierte en Emperador.',
+      tecnologia: 'Aparecen en público los Nighul, vinculados al Reactor Oscuro.',
+      consecuencias: 'Crisis en el centro imperial. Raqid empieza la búsqueda del Guardián del Bosque.'
+    },
+    lugares: ['rilit', 'rilur-prime', 'riqtom'],
+    juegos: [
+      'Misión de sigilo y sabotaje: infiltrarse en la luna-forja de Rilit y destruirla.',
+      'Combate contra jefe: el duelo de Kemet contra el Emperador en la ciudadela de Rilur Prime.'
+    ]
+  },
+
+  /* ============================================================ TOMO III */
+  {
+    id: 'tomo-3',
+    num: 'III',
+    titulo: 'El Guardián del Bosque',
+    periodo: 'c. 23 – 26 DO',
+    anios: [23, 26],
+    original: 'Cinco años después, Raqid encuentra a Kefra, un joven con un poderoso vínculo con la Sintonía. Tras un entrenamiento acelerado en otro plano, Kefra regresa como un guerrero formidable. Destruye el Reactor Oscuro del Imperio y lidera una campaña rebelde que libera Vinica Prime, convirtiéndose en un símbolo de esperanza.',
+    sinopsis: 'Raqid encuentra a Kefra en el mundo-bosque de Arcados. Tras entrenar en otro plano, Kefra destruye el Reactor Oscuro en Raqut. El Imperio pierde su fuente de poder, los Nighul quedan rotos y la rebelión libera Vinica Prime y Polus-12.',
+    capitulos: [
+      {
+        titulo: 'Arcados',
+        base: 'O A P',
+        texto: `
+Raqid buscó durante cinco años. Recorrió mundos ocupados y mundos olvidados con la única pista que le había dejado su maestro: un bosque, y alguien unido a él.
+
+Lo encontró en Arcados, un mundo neutral del extremo noroeste de la galaxia, lejos de las rutas imperiales. {Arcados estaba cubierto de bosques tan antiguos que sus habitantes decían que los árboles tenían memoria.} Allí vivía Kefra, {un joven sin entrenamiento ni linaje conocido que nunca había visto a un caballero.}
+
+{Raqid lo supo en cuanto lo vio. La Sintonía, desafinada en casi toda la galaxia por la energía del reactor, sonaba limpia alrededor de aquel muchacho.} El vínculo de Kefra con la Sintonía era {más poderoso que el de cualquier caballero que Raqid hubiera conocido, incluido Kemet}.`
+      },
+      {
+        titulo: 'El otro plano',
+        base: 'O P',
+        texto: `
+No había tiempo para un entrenamiento normal. {Formar a un caballero llevaba décadas, y la galaxia no tenía décadas.} Raqid hizo algo que la orden solo había intentado en contadas ocasiones: llevó a Kefra a entrenarse en otro plano.
+
+{Los Caballeros lo llamaban el Plano de la Resonancia. Era un reflejo de la realidad hecho de Sintonía pura, al que solo se llegaba desde lugares donde la energía universal era muy intensa, como los bosques de Arcados o el santuario de Riqtom. Allí el tiempo no corría igual. Nadie supo nunca del todo qué vivió Kefra en aquel lugar, y él casi nunca hablaba de ello.}
+
+Cuando regresó, ya no era un muchacho de los bosques, sino un guerrero formidable.`
+      },
+      {
+        titulo: 'El corazón de Raqut',
+        base: 'O A P',
+        texto: `
+{Kefra entendió algo que muchos rebeldes no veían: mientras el reactor siguiera funcionando, era inútil luchar contra los ejércitos de Rilur, porque el Imperio fabricaba una legión nueva por cada una que perdía.}
+
+Su objetivo fue el Reactor Oscuro, en el mundo de Raqut. {Kefra y Raqid se infiltraron en el complejo guiados por la propia Sintonía, que allí se retorcía como una herida abierta. Lo defendían los Nighul, y Raqid se quedó atrás para contenerlos mientras Kefra avanzaba hacia el núcleo.}
+
+Kefra destruyó el Reactor Oscuro.
+
+Las consecuencias se sintieron en toda la galaxia a la vez. {Las fábricas de Rilur se detuvieron y los criaderos de clones se apagaron.} El Imperio perdió la energía casi ilimitada sobre la que había construido sus ejércitos. {Los Nighul, unidos al reactor en cuerpo y mente, sintieron que les arrancaban algo de dentro: muchos cayeron fulminados y otros perdieron la razón.} Los supervivientes seguían siendo guerreros temibles, pero nunca volverían a ser lo que habían sido.
+
+{Raqid sobrevivió, aunque con heridas que nunca curaron del todo. En Riqtom, los últimos Caballeros sintieron que la Sintonía empezaba a afinarse de nuevo.}`
+      },
+      {
+        titulo: 'Vinica libre',
+        base: 'O A P',
+        texto: `
+Sin el reactor, el ejército imperial que ocupaba el oeste se quedó sin refuerzos. Kefra aprovechó el momento y lideró una campaña rebelde hacia Vinica Prime.
+
+{La flota rebelde se formó con naves vinicanas escondidas desde la Paz de Hierro, voluntarios de los mundos liberados y antiguos oficiales de Dubitsa. La guarnición imperial de Vinica Prime, que llevaba años sin conocer la escasez, descubrió de golpe que los droides que perdía ya no se reponían.} Vinica Prime quedó liberada, y con ella Polus-12, el gran mundo industrial de la República, cuyas fábricas pasaron a abastecer a la rebelión.
+
+{El Senado de Vinica volvió a reunirse en libertad.} En toda la galaxia se repetía el nombre de Kefra. El muchacho de Arcados se había convertido en un símbolo de esperanza, y la galaxia empezó a llamarlo con el título que Kemet había profetizado: el Guardián del Bosque.`
+      }
+    ],
+    ficha: {
+      facciones: ['sintonia', 'vinica', 'rilur'],
+      personajes: ['raqid', 'kefra', 'korvan'],
+      batallas: ['reactor-raqut', 'liberacion-vinica'],
+      territorio: 'Se liberan Vinica Prime y Polus-12. El oeste galáctico sale del control imperial.',
+      muertes: '{Gran parte de los Nighul mueren o enloquecen al caer el reactor.}',
+      lideres: 'Kefra se convierte en líder rebelde y símbolo de la galaxia.',
+      tecnologia: 'Destrucción del Reactor Oscuro. Se acaban la energía casi gratuita y la producción masiva de clones y droides.',
+      consecuencias: 'Rilur ya no puede reponer sus ejércitos de la nada y tiene que buscar otra fuente de poder.'
+    },
+    lugares: ['arcados', 'raqut', 'vinica-prime', 'polus-12', 'riqtom'],
+    juegos: [
+      'RPG o acción: el viaje de Kefra desde Arcados, el entrenamiento en el otro plano y la infiltración en Raqut.',
+      'Mecánica de mundo: al destruir el reactor cambian las reglas económicas del Imperio (antes y después de Raqut).'
+    ]
+  },
+
+  /* ============================================================ TOMO IV */
+  {
+    id: 'tomo-4',
+    num: 'IV',
+    titulo: 'El Renacer del Imperio',
+    periodo: 'c. 27 – 33 DO',
+    anios: [27, 33],
+    original: 'A pesar de las derrotas, Rilur resiste. El Emperador lanza una desastrosa invasión a la galaxia de Andalus, perdiendo millones de tropas. A su regreso, herido y furioso, lanza una contraofensiva brutal, mientras Kefra aprovecha para iniciar una guerra civil galáctica total. Dubitsa y Vinica se fortalecen en el caos.',
+    sinopsis: 'Sin reactor, Korvan busca recursos fuera de la galaxia e invade Andalus. Es una masacre de la que casi nadie vuelve. Herido, desata una represión brutal; Kefra responde con una guerra civil galáctica total. Dubitsa renace bajo Teosio II y Vinica se fortalece.',
+    capitulos: [
+      {
+        titulo: 'Rilur resiste',
+        base: 'O P',
+        texto: `
+A pesar de las derrotas, Rilur resistió. Sin el reactor ya no podía fabricar ejércitos de la nada, pero {conservaba legiones veteranas, flotas enteras, a los Nizarios y a los Nighul que habían sobrevivido. Y tenía a Korvan.}
+
+{El Emperador Korvan había pasado la vida en campaña y sabía gestionar la escasez. Recortó frentes, abandonó los mundos que no podía defender y concentró sus fuerzas en el núcleo.} Pero también sabía que un imperio de soldados sin energía barata se moría poco a poco. {Necesitaba algo que sustituyera al reactor, y lo buscó donde nadie se había atrevido a mirar: fuera de la galaxia.}`
+      },
+      {
+        titulo: 'Más allá del Vacío',
+        base: 'O A P',
+        texto: `
+{En el extremo oriental de la galaxia, más allá de las ruinas de Portus, se abría el Paso del Vacío, el único corredor conocido hacia la galaxia vecina.} Al otro lado vivían los Hijos de Andalus, un pueblo del que en Rilur solo se conocían leyendas: {que sus antepasados habían habitado esta galaxia, que Portus había sido su capital y que sus libros sagrados prometían el regreso.}
+
+{Korvan creyó que la galaxia de Andalus era rica, estaba mal defendida y podía devolver al Imperio la energía y los recursos que había perdido.} Lanzó la invasión {con lo mejor que le quedaba}.
+
+Fue una masacre. {La galaxia de Andalus no estaba indefensa: era el corazón de una potencia teocrático-militar que llevaba siglos preparándose para la guerra.} Rilur perdió millones de tropas. Casi nadie volvió con vida, y el Imperio perdió gran parte de su ejército en una sola campaña.
+
+Korvan fue uno de los pocos que regresaron. Volvió herido y furioso, y con algo peor que una derrota: había despertado a un enemigo temible de otra galaxia {que ahora conocía el camino}.`
+      },
+      {
+        titulo: 'La contraofensiva',
+        base: 'O P',
+        texto: `
+Herido y humillado, Korvan no se retiró a recuperarse. Lanzó una contraofensiva brutal {contra los mundos rebeldes de su propia galaxia, como si necesitara demostrar que el Imperio seguía vivo.}
+
+{Ordenó arrasar mundos enteros sospechosos de apoyar a Kefra y lanzó contra ellos a los últimos Nighul y a las legiones de Nizarios. Durante un tiempo pareció funcionar, pero cada mundo arrasado empujaba a otros dos a la rebelión.}`
+      },
+      {
+        titulo: 'La guerra de todos',
+        base: 'O A P',
+        texto: `
+Kefra vio la oportunidad que llevaba años esperando. Con el Imperio desangrado tras Andalus y volcado en una represión sin sentido, inició una guerra civil galáctica total. {Ya no era una rebelión en los márgenes: los mundos ocupados, las guarniciones descontentas y los pueblos absorbidos se levantaron a la vez.}
+
+En el caos, dos potencias se fortalecieron. En el este, Dubitsa resurgió de sus cenizas. Teosio II, {descendiente de la antigua dinastía,} reunió a los Pretoni que habían sobrevivido en la clandestinidad, {recuperó Dubitsa Prime y reabrió las universidades de Instantinopla}. En el oeste, Vinica, libre desde la campaña de Kefra, {reconstruyó su flota} y se hizo más fuerte.
+
+{Los principados del este también recuperaron su independencia, aunque enseguida volvieron a sus viejas rivalidades.}
+
+{Al terminar la guerra civil, Rilur ya no era el amo de la galaxia. Era una potencia herida, rodeada de enemigos que habían aprendido a vencerla.}`
+      }
+    ],
+    ficha: {
+      facciones: ['rilur', 'andalus', 'sintonia', 'dubitsa', 'vinica', 'principados'],
+      personajes: ['korvan', 'kefra', 'teosio-ii'],
+      batallas: ['invasion-andalus', 'contraofensiva-korvan', 'guerra-civil'],
+      territorio: 'Rilur pierde el este y el oeste. Dubitsa renace con Dubitsa Prime como capital. Vinica se refuerza y {los principados recuperan su independencia}.',
+      muertes: 'Millones de soldados de Rilur en la galaxia de Andalus.',
+      lideres: 'Teosio II restaura el Imperio de Dubitsa.',
+      tecnologia: '{Paso del Vacío: el corredor intergaláctico hacia Andalus.}',
+      consecuencias: 'Andalus descubre el camino hacia esta galaxia y alimenta su rencor. Rilur queda desangrado.'
+    },
+    lugares: ['portus', 'paso-vacio', 'dubitsa-prime', 'vinica-prime', 'rilur-prime'],
+    juegos: [
+      'Campaña trágica de supervivencia: la retirada de Korvan desde la galaxia de Andalus.',
+      'Gran estrategia: la guerra civil galáctica con varias facciones jugables (Rilur, rebeldes de Kefra, Dubitsa, Vinica).'
+    ]
+  },
+
+  /* ============================================================ TOMO V */
+  {
+    id: 'tomo-5',
+    num: 'V',
+    titulo: 'El Legado de la Luz',
+    periodo: 'c. 33 – 52 DO',
+    anios: [33, 52],
+    original: 'El Emperador muere por sus heridas. Su hijo, Reus, asciende al trono y busca la paz. Firma una tregua con Dubitsa y Vinica, reestructura el Imperio hacia fuentes de energía limpias e introduce un sistema parlamentario. Una era de reconstrucción comienza, pero una nueva sombra se cierne desde el vacío.',
+    sinopsis: 'Korvan muere de sus heridas. Su hijo Reus firma la paz, sustituye la energía del reactor por energía limpia y crea un Parlamento. Veinte años de reconstrucción, mientras al otro lado del Vacío Andalus prepara su regreso.',
+    capitulos: [
+      {
+        titulo: 'La muerte de Korvan',
+        base: 'O P',
+        texto: `
+{En el año 33 DO,} el Emperador murió por sus heridas. {Las que había traído de Andalus nunca llegaron a cerrar. Murió en Rilur Prime, rodeado de generales que ya discutían su sucesión.}
+
+{Esta vez no hubo crisis.} Korvan tenía un hijo, Reus, y el trono pasó a él.`
+      },
+      {
+        titulo: 'El emperador que buscó la paz',
+        base: 'O P',
+        texto: `
+{Reus no se parecía a su padre. Había crecido entre guerras que Rilur ya no podía ganar y había visto volver de Andalus a los pocos supervivientes.} Al llegar al trono hizo lo que ningún emperador de Rilur había hecho: buscar la paz.
+
+Firmó una tregua con Dubitsa y Vinica. {Se la llamó la Tregua de Instantinopla, porque se firmó en la capital renacida de Dubitsa. Rilur reconoció las fronteras de sus antiguos enemigos y estos, a cambio, dejaron de alimentar la guerra civil. Kefra, cuya guerra había hecho posible la tregua, la aceptó.}
+
+{Muchos en Rilur, sobre todo en la élite militar, lo vieron como una rendición. Para Reus era la única manera de que el Imperio sobreviviera.}`
+      },
+      {
+        titulo: 'Luz limpia',
+        base: 'O A P',
+        texto: `
+Reus sabía que el poder de Rilur se había levantado sobre el Reactor Oscuro y que aquello no iba a volver. Por eso reorientó el Imperio hacia fuentes de energía limpias. {Las forjas de Rilit se reconstruyeron para funcionar con la nueva energía.}
+
+Introdujo además un sistema parlamentario: por primera vez, el Emperador compartía el poder con un Parlamento. Rilur se democratizó un poco y la luz volvió a brillar en medio del caos y de las inestabilidades internas y externas, que nunca desaparecieron del todo. La industria del Imperio renació sobre bases nuevas.
+
+Los Nighul también cambiaron. Sin el reactor ya no eran lo que habían sido, pero seguían siendo una élite prestigiosa y temida: guerreros y, al mismo tiempo, los mejores científicos, filósofos e ingenieros de la galaxia. {Con Reus dedicaron tanto esfuerzo a los laboratorios y las academias como a los campos de batalla.} Junto a los Nizarios, seguían siendo el orgullo de Rilur.
+
+Comenzó una era de reconstrucción. {Durante casi veinte años, la galaxia conoció algo parecido a la paz.}`
+      },
+      {
+        titulo: 'Una sombra en el Vacío',
+        base: 'O A P',
+        texto: `
+{Kefra se retiró. Unos decían que había vuelto a los bosques de Arcados y otros que estaba en Riqtom, reconstruyendo una orden que tenía muy pocos miembros. El Guardián del Bosque dejó de ser un general para convertirse en una leyenda.}
+
+Mientras tanto, al otro lado del Paso del Vacío, los Hijos de Andalus no habían olvidado. La invasión de Korvan les había enseñado el camino hacia la galaxia de sus antepasados, {y sus profetas lo interpretaron como una señal. Durante veinte años reunieron flotas y ejércitos.}
+
+{En el año 52 DO, las estaciones de vigilancia de la frontera oriental dejaron de transmitir, una tras otra.} Una nueva sombra se cernía desde el vacío.`
+      }
+    ],
+    ficha: {
+      facciones: ['rilur', 'dubitsa', 'vinica', 'andalus'],
+      personajes: ['korvan', 'reus', 'teosio-ii', 'kefra'],
+      batallas: [],
+      territorio: 'Las fronteras quedan congeladas por la {Tregua de Instantinopla}. Rilur reconoce a Dubitsa y Vinica.',
+      muertes: '{Korvan (33 DO)}, por las heridas de Andalus.',
+      lideres: 'Reus, Emperador de Rilur. Se crea el Parlamento de Rilur.',
+      tecnologia: 'Energía limpia en lugar del reactor. Reconversión industrial. Los Nighul pasan a ser también científicos de academia.',
+      consecuencias: 'Paz y reconstrucción, pero el ejército de Rilur queda reducido justo antes de la invasión de Andalus.'
+    },
+    lugares: ['rilur-prime', 'dubitsa-prime', 'rilit', 'riqtom', 'portus'],
+    juegos: [
+      'Juego de gestión o política: reformar Rilur con Reus entre el Parlamento, la élite militar y los Nighul.',
+      'Misión de exploración: investigar el silencio de las estaciones de la frontera oriental (prólogo del Tomo VI).'
+    ]
+  },
+
+  /* ============================================================ TOMO VI */
+  {
+    id: 'tomo-6',
+    num: 'VI',
+    titulo: 'La Última Gran Guerra Galáctica',
+    periodo: 'c. 52 – 64 DO',
+    anios: [52, 64],
+    original: 'Los Hijos de Andalus invaden, liderados por el General Muwiya. Reus cae en un sacrificio para ganar tiempo. Su hijo Ublek toma el mando, repele a Andalus justo cuando una Expedición de Venganza liderada por el Príncipe Rahman llega. Dubitsa, Vinica y Rilur forman una Coalición Definitiva, derrotando a Rahman en una batalla apocalíptica. Ublek sobrevive, pero gravemente herido, y muere años después, dejando el trono vacío.',
+    sinopsis: 'Muwiya invade, proclama el Gaziato en Portus y conquista Dubitsa Prime. Reus muere ganando tiempo. Ublek derrota a Vakel y a Muwiya. El Príncipe Rahman llega para vengarlo, y Dubitsa, Vinica, Rilur y Kefra lo derrotan en Turonis. Kefra desaparece y Ublek muere años después sin heredero.',
+    capitulos: [
+      {
+        titulo: 'Los Hijos de Andalus',
+        base: 'O A P',
+        texto: `
+Los Hijos de Andalus invadieron con un fervor teocrático-militar que la galaxia no había visto nunca. No venían a conquistar, decían, sino a recuperar territorios ancestrales.
+
+Los lideraba el General Muwiya, un comandante carismático y brillante. {Su primer acto fue tomar Portus, la antigua capital de sus antepasados, y proclamar allí el Gaziato de Andalus, el dominio de los Hijos de Andalus en esta galaxia.} Desde Portus, sus ejércitos avanzaron hacia el oeste.
+
+El primer gran golpe cayó sobre Dubitsa: Muwiya conquistó Dubitsa Prime. {Instantinopla cayó tras un asedio, y Teosio II tuvo que huir con lo que quedaba de su corte y de sus Pretoni.} El imperio que había renacido de sus cenizas perdía su corazón por segunda vez.`
+      },
+      {
+        titulo: 'El sacrificio de Reus',
+        base: 'O P',
+        texto: `
+{Rilur no estaba preparado. Veinte años de paz y de reformas habían reducido sus legiones, y los Hijos de Andalus avanzaban más rápido de lo que el Parlamento podía debatir.}
+
+Reus tomó una decisión. {Reunió a la Guardia Imperial y a los Nighul que le eran leales y se plantó en Raqut, el mundo herido donde había estado el Reactor Oscuro y paso obligado hacia el núcleo del Imperio.} No buscaba ganar, sino ganar tiempo para que el Imperio reuniera sus fuerzas.
+
+Lo consiguió. Reus cayó en un sacrificio que frenó a Andalus {durante semanas}. El emperador que había buscado la paz murió defendiendo lo que había construido.`
+      },
+      {
+        titulo: 'Ublek',
+        base: 'O A P',
+        texto: `
+Su hijo Ublek tomó el mando. {Se había formado en las academias reformadas por su padre y combinaba la disciplina de su abuelo Korvan con la visión de Reus.}
+
+Lo primero que hizo fue proteger lo que Andalus quería destruir. Vakel, {uno de los generales de Muwiya,} se lanzó contra {las forjas de Rilit} para paralizar la industria del Imperio. Ublek lo estaba esperando, derrotó a Vakel {y aniquiló su ejército}.
+
+Después pasó a la ofensiva y repelió a Andalus. {En la Segunda Batalla de Orion-34, en el mismo sistema donde Saelen Vharr había vencido a Lord Veylan medio siglo antes, las fuerzas de Ublek derrotaron al ejército principal de Muwiya.} Muwiya murió, {y para los Hijos de Andalus fue Ublek en persona quien lo mató}.
+
+{Parecía que la guerra había terminado. En realidad, no había hecho más que empezar.}`
+      },
+      {
+        titulo: 'La Expedición de Venganza',
+        base: 'O A P',
+        texto: `
+La muerte de Muwiya llegó al otro lado del Vacío como una afrenta que había que lavar con sangre. Justo cuando Ublek terminaba de repeler la invasión, llegó la Expedición de Venganza.
+
+La lideraba el Príncipe Rahman, {llamado «el Intrépido»,} uno de los numerosos hijos del Emperador de Andalus. {Su ejército era mayor y más fanático que el de Muwiya. Rahman reforzó Dubitsa Prime y Portus, que seguían en manos de Andalus, y lanzó su ofensiva hacia el corazón de la galaxia.}
+
+{Esta vez, ninguna potencia podía enfrentarse a él sola.}`
+      },
+      {
+        titulo: 'La Coalición Definitiva',
+        base: 'O A P',
+        texto: `
+Por primera vez en la historia, Dubitsa, Vinica y Rilur lucharon en el mismo bando. Lo llamaron la Coalición Definitiva.
+
+{El pacto se selló en Vinica Prime.} Teosio II aportó sus Pretoni {y el deseo de recuperar su capital}. {Vinica puso su flota y la producción de Polus-12.} Ublek llevó lo que quedaba de las legiones de Rilur, los Nizarios y los Nighul. Y en el momento más oscuro reapareció alguien a quien muchos daban por muerto: Kefra, el Guardián del Bosque, {con los pocos caballeros de la Sintonía que había reunido}.
+
+El primer objetivo de la Coalición fue Dubitsa Prime. {Tras una campaña de varios meses,} la liberó y devolvió Instantinopla a Teosio II. {Dubitsa recuperó su corazón por segunda vez. Rahman no retrocedió: reunió todas sus fuerzas para jugárselo todo en una sola batalla.}`
+      },
+      {
+        titulo: 'Turonis',
+        base: 'O A P',
+        texto: `
+Los dos ejércitos chocaron en {Turonis, un mundo estratégico donde se cruzaban las rutas que iban de Portus al núcleo y al sur. Quien lo controlara decidiría hacia dónde se movía la guerra.} Era el lugar donde el avance de Andalus tenía que encontrarse con la Coalición.
+
+Fue una batalla apocalíptica. {Las crónicas hablan de flotas tan numerosas que tapaban las estrellas y de una superficie que ardió durante días. Las legiones de Ublek sostuvieron el centro, los Pretoni de Teosio II atacaron por los flancos y la flota vinicana cortó los refuerzos de Andalus.} Kefra y sus caballeros combatieron donde la batalla era más dura.
+
+La Coalición Definitiva derrotó a Rahman. {El Príncipe cayó en la batalla,} y con él se derrumbó la Expedición de Venganza.
+
+Después nadie volvió a ver a Kefra. No se encontró su cuerpo ni nadie lo vio morir: simplemente desapareció. Hoy la galaxia sigue sin saber si el Guardián del Bosque está vivo.
+
+Ublek sobrevivió, pero gravemente herido.`
+      },
+      {
+        titulo: 'El trono vacío',
+        base: 'O A P',
+        texto: `
+Tras la derrota, el poder de Andalus en esta galaxia se desintegró. {Portus quedó abandonada.} Lo que quedaba del Gaziato se dividió en flotas piratas y señores de la guerra que todavía hoy asaltan las rutas comerciales. Su ideología y su rencor siguen vivos. Entre los numerosos hijos del Emperador de Andalus hubo otros, como el Príncipe Alid, que llevaron campañas de venganza a esta galaxia; {su historia está por escribir}.
+
+{Asustados por lo cerca que habían estado del desastre, los principados del este dejaron atrás sus rivalidades y se unieron bajo una sola bandera: la Unión del Este.}
+
+{Teosio II murió hacia el año 62 DO, y le sucedió su hijo, Teosio III.}
+
+Ublek gobernó algunos años más, pero nunca se recuperó de sus heridas. Murió {en el año 64 DO} sin un heredero reconocido y dejó el trono vacío.`
+      }
+    ],
+    ficha: {
+      facciones: ['andalus', 'rilur', 'dubitsa', 'vinica', 'sintonia', 'principados'],
+      personajes: ['muwiya', 'reus', 'ublek', 'vakel', 'rahman', 'teosio-ii', 'kefra', 'alid', 'emperador-andalus'],
+      batallas: ['caida-dubitsa-prime', 'guardia-raqut', 'rilit-vakel', 'orion-34-ii', 'liberacion-instantinopla', 'turonis'],
+      territorio: 'Andalus llega a dominar Portus y Dubitsa Prime y lo pierde todo. Dubitsa recupera su capital. {Nace la Unión del Este.}',
+      muertes: 'Reus (sacrificio). Muwiya. {Rahman (en Turonis).} {Teosio II (c. 62 DO).} Ublek, años después ({64 DO}). Kefra desaparece.',
+      lideres: 'Ublek, Emperador de Rilur. {Teosio III, Emperador de Dubitsa.}',
+      tecnologia: '{Las forjas de energía limpia de Rilit resultan decisivas.}',
+      consecuencias: 'Andalus se reduce a piratas. El trono de Rilur queda vacío y empieza el interregno.'
+    },
+    lugares: ['portus', 'dubitsa-prime', 'raqut', 'rilit', 'lolop', 'vinica-prime', 'turonis', 'paso-vacio'],
+    juegos: [
+      'RTS de la Última Gran Guerra con cuatro bandos jugables y la Batalla de Turonis como gran final.',
+      'Misión de defensa desesperada: aguantar en Raqut con Reus el tiempo necesario.',
+      'Misterio que se puede mantener abierto: ¿qué le pasó a Kefra en Turonis?'
+    ]
+  },
+
+  /* ============================================================ TOMO VII */
+  {
+    id: 'tomo-7',
+    num: 'VII',
+    titulo: 'El Heredero Bastardo',
+    periodo: 'c. 64 – 68 DO',
+    anios: [64, 68],
+    original: 'Arlik, hijo no reconocido del Emperador Ublek, regresa del exilio bajo la guía de su mentor Nighul, Trok, decidido a reclamar el trono de Rilur. Con el apoyo de una legión secreta, se proclama heredero en la capital, logrando un respaldo débil del Parlamento y despertando la hostilidad de la élite militar. Para consolidar su legitimidad, lidera personalmente la campaña contra la rebelión en Uxal. Pese a la inferioridad numérica, su liderazgo y la ferocidad de sus Nighul y Nizarios le otorgan una victoria decisiva. Así comienza su transformación de exiliado a Emperador guerrero, abriendo una nueva guerra por el dominio total del Imperio.',
+    sinopsis: 'Tras la muerte de Ublek, Moffs y almirantes se disputan el trono. Arlik, hijo bastardo de Ublek formado por el Nighul Trok, vuelve del exilio con una legión secreta, se proclama heredero y vence en Uxal. Empieza su guerra por el dominio total del Imperio.',
+    capitulos: [
+      {
+        titulo: 'El interregno',
+        base: 'O P',
+        texto: `
+La muerte de Ublek dejó a Rilur sin emperador y sin sucesor, y el Imperio se hundió en luchas internas. Moffs y almirantes se disputaron el trono vacío, {cada uno con sus propias flotas y legiones}. Las regiones lejanas fueron declarando su autonomía una tras otra. {El Parlamento que había creado Reus emitía decretos que nadie cumplía.}
+
+El poder militar del Imperio seguía siendo enorme, pero estaba desorganizado y con la moral baja. {En el mundo de Uxal, la rebelión se convirtió en una guerra abierta.} Desde Instantinopla, Teosio III observaba el caos de Rilur con ambición calculadora.`
+      },
+      {
+        titulo: 'El hijo no reconocido',
+        base: 'O P',
+        texto: `
+Ublek había tenido un hijo al que nunca reconoció. Se llamaba Arlik.
+
+{Su madre era una ingeniera Nighul, y el niño creció lejos de la corte, donde su existencia habría sido un escándalo y un peligro. Cuando Ublek murió y los Moffs empezaron a eliminar a cualquiera con derechos al trono, Arlik vivía en el exilio.} Allí lo protegía y lo formaba su mentor Nighul, Trok.
+
+{Trok era un Nighul de la época del reactor, uno de los pocos que habían sobrevivido a su destrucción sin perder la razón. Enseñó a Arlik la tradición completa de los Nighul: el combate, pero también la ciencia, la filosofía y la ingeniería. Con él, Arlik aprendió a ser un guerrero y aprendió también por qué Rilur había caído tantas veces.}`
+      },
+      {
+        titulo: 'La legión secreta',
+        base: 'O P',
+        texto: `
+Arlik volvió del exilio guiado por Trok y decidido a reclamar el trono de Rilur. No volvió solo: lo respaldaba una legión secreta {de Nighul, Nizarios y veteranos de Turonis que nunca habían aceptado a los Moffs}.
+
+Se proclamó heredero en la capital. El Parlamento le dio un apoyo débil, {porque prefería un emperador con la sangre de Ublek a un Moff con flota propia}. La élite militar reaccionó con hostilidad: {para los almirantes y los Moffs que llevaban años disputándose el trono, aquel bastardo era un usurpador.}
+
+{Arlik sabía que la sangre no le bastaría. Necesitaba demostrar que podía gobernar.}`
+      },
+      {
+        titulo: 'Uxal',
+        base: 'O P',
+        texto: `
+Para consolidar su legitimidad, Arlik dirigió en persona la campaña contra la rebelión de Uxal, {el foco de inestabilidad más grave del Imperio}.
+
+Llegó con muchas menos tropas que el enemigo. {Los rebeldes de Uxal contaban con el apoyo de varios Moffs que esperaban ver morir al pretendiente.} Pese a la inferioridad numérica, su liderazgo y la ferocidad de sus Nighul y Nizarios le dieron una victoria decisiva.
+
+{La noticia de Uxal llegó a Rilur Prime antes que el propio Arlik y le dio lo que la sangre no había podido darle: autoridad.}`
+      },
+      {
+        titulo: 'El Emperador guerrero',
+        base: 'O',
+        texto: `
+Así empezó la transformación de Arlik de exiliado en Emperador guerrero. Bajo su mando, el Imperio entró en una nueva fase de reconstrucción forzada. Arlik está purgando a los comandantes desleales y concentrando las legiones bajo su mando directo. Su victoria en Uxal ha demostrado que puede imponer el orden por la fuerza, aunque la estabilidad sigue siendo frágil y las conspiraciones no han cesado.
+
+La campaña de Uxal abrió una nueva guerra por el dominio total del Imperio. {Los Moffs que todavía controlan flotas no se rendirán sin luchar.} Fuera de Rilur, la galaxia observa.
+
+Dubitsa, ascendente bajo Teosio III, espera su momento. Vinica, desmilitarizada, confía en el comercio. Los Principados del Este son fuertes, pero imprevisibles. Los restos de Andalus acechan en las rutas. Y quizá, en algún lugar, el Guardián del Bosque sigue vivo.
+
+Aquí termina el último Tomo del Holocrón y empieza el presente: un frágil equilibrio de poder.`
+      }
+    ],
+    ficha: {
+      facciones: ['rilur', 'dubitsa'],
+      personajes: ['arlik', 'trok', 'ublek', 'teosio-iii'],
+      batallas: ['uxal'],
+      territorio: 'Rilur está fragmentado entre Moffs, almirantes y regiones autónomas. Arlik recupera Uxal y el núcleo.',
+      muertes: '{Moffs y comandantes eliminados en las purgas de Arlik.}',
+      lideres: 'Arlik, Emperador de Rilur.',
+      tecnologia: 'Siguen existiendo los Nighul, ya sin reactor: guerreros, científicos e ingenieros.',
+      consecuencias: 'Empieza la guerra de Arlik por el dominio total del Imperio. Este es el presente del Holocrón.'
+    },
+    lugares: ['rilur-prime', 'uxal', 'dubitsa-prime'],
+    juegos: [
+      'Juego principal del presente: Arlik contra los Moffs, en un RPG táctico o un RTS de guerra civil imperial.',
+      'Sistema de legitimidad: apoyo del Parlamento, del ejército y de los Nighul como recursos que hay que equilibrar.'
+    ]
+  }
+];
+
+LORE.epilogo = {
+  titulo: 'El frágil equilibrio',
+  texto: 'Tras la muerte del Emperador Ublek y el fin de la Expedición de Venganza de Andalus, la galaxia se encuentra en un frágil equilibrio de poder. Viejas tensiones resurgen y nuevas potencias maniobran en el vacío dejado por la guerra.',
+  presente: '68 DO'
+};
+
+</script>
+<script>/* datos/facciones.js */
+/*
+  HOLOCRÓN GALÁCTICO — Códice de Facciones
+  src: 'O' Original web · 'A' Autor 2026 · 'P' Propuesta. {llaves} = detalle propuesto.
+*/
+window.LORE = window.LORE || {};
+
+LORE.facciones = [
+  /* ============================================================ RILUR */
+  {
+    id: 'rilur',
+    nombre: 'Imperio de Rilur',
+    color: '#ef4444',
+    estado: 'En Reconstrucción',
+    poder: 25,
+    lema: '{«Orden y poder»}',
+    capital: 'Rilur Prime',
+    gobierno: 'Imperio hereditario. Desde Reus comparte el poder con un Parlamento. {Los Moffs gobiernan las regiones con flotas propias.}',
+    resumenActual: 'Bajo el nuevo Emperador Arlik, el Imperio ha entrado en una nueva fase de reconstrucción forzada. Arlik está purgando a los comandantes desleales y consolidando las legiones bajo su mando directo. Aunque la estabilidad es frágil y las conspiraciones persisten, su victoria en Uxal ha demostrado su capacidad para imponer el orden por la fuerza.',
+    codice: 'Fundado sobre los principios de orden y poder, el Imperio de Rilur ha sido la fuerza dominante durante siglos. Su poderío militar se basaba en la producción masiva de clones y droides. Tras una serie de guerras devastadoras y crisis de liderazgo, el imperio es una sombra de lo que fue, con su estructura central colapsada y sus territorios exteriores en rebelión abierta. Su legado es de tiranía, pero también de una paz impuesta que muchos ahora echan de menos.',
+    historia: [
+      { titulo: 'Siglos de dominio', texto: 'Rilur fue la fuerza dominante de la galaxia durante siglos, construida sobre el orden y el poder. {Su dinastía llevaba generaciones en el trono cuando lo heredó Sarkon, el emperador con el que empieza la saga.}' },
+      { titulo: 'La era del Reactor Oscuro', texto: 'Rilur logró crear el Reactor Oscuro {en Raqut}. Le daba energía y recursos casi ilimitados a un coste casi nulo, lo que le permitió mantener ejércitos masivos de clones y droides prácticamente gratis y extenderse por toda la galaxia. Su energía alterada desafinaba la Sintonía del universo y potenciaba a los Nighul.' },
+      { titulo: 'Las Galaxias Fragmentadas', texto: 'Avance imparable. A pesar de la derrota de Lord Veylan en Orion-34, Rilur conquista el este entero, absorbe Dubitsa e impone a Vinica un tratado humillante. Empieza la paz impuesta.' },
+      { titulo: 'La primera crisis', texto: 'Los rebeldes destruyen la mega-instalación de Rilit. El Emperador desata a los Nighul y muere en un duelo contra Kemet. {Korvan, Gran Mariscal, ocupa el trono.} Cinco años después, Kefra destruye el Reactor Oscuro.' },
+      { titulo: 'El desastre de Andalus', texto: 'Sin reactor, el Emperador invade la galaxia de Andalus. Es una masacre: casi nadie vuelve, Rilur pierde gran parte de su ejército y despierta a un enemigo temible. A la contraofensiva brutal le sigue una guerra civil galáctica total.' },
+      { titulo: 'Las reformas de Reus', texto: 'Reus firma la paz, sustituye el reactor por energía limpia y crea un Parlamento. Rilur se democratiza un poco y reaviva la luz entre inestabilidades internas y externas. La industria renace y los Nighul siguen siendo una élite prestigiosa.' },
+      { titulo: 'La Última Gran Guerra', texto: 'Reus muere ganando tiempo frente a Andalus. Ublek repele la invasión, derrota a Vakel y a Muwiya, y lidera a Rilur dentro de la Coalición Definitiva contra Rahman. Sobrevive gravemente herido y muere años después sin heredero.' },
+      { titulo: 'Interregno y Arlik', texto: 'Moffs y almirantes compiten por el trono mientras las regiones lejanas declaran su autonomía. Arlik, hijo bastardo de Ublek, vuelve con una legión secreta, vence en Uxal y empieza una guerra por el dominio total del Imperio.' }
+    ],
+    gobernantes: [
+      { nombre: '{Sarkon}', titulo: 'el Primer Emperador', periodo: '… – 18 DO', nota: 'Era del Reactor Oscuro. Muere en duelo con Kemet.' },
+      { nombre: '{Korvan}', titulo: '{el Implacable}', periodo: '18 – 33 DO', nota: 'Sucesor distinto. Invade Andalus y muere por sus heridas.' },
+      { nombre: 'Reus', titulo: '{el Reformador}', periodo: '33 – {55} DO', nota: 'Hijo de Korvan. Paz, energía limpia y Parlamento. Muere en sacrificio.' },
+      { nombre: 'Ublek', titulo: '{el Defensor}', periodo: '{55 – 64} DO', nota: 'Hijo de Reus. Vence a Andalus y muere años después por sus heridas.' },
+      { nombre: 'Interregno', titulo: 'Moffs y almirantes', periodo: '{64 – 67} DO', nota: 'Trono vacío. Imperio fragmentado.' },
+      { nombre: 'Arlik', titulo: 'el Heredero Bastardo', periodo: '{67} DO – presente', nota: 'Hijo no reconocido de Ublek. Emperador guerrero.' }
+    ],
+    ejercito: [
+      { nombre: 'Clones', texto: 'Producción masiva. En la era del reactor costaban casi nada. Los mejores clones podían ser seleccionados para convertirse en Nighul.' },
+      { nombre: 'Droides', texto: 'Ejércitos de droides en cantidades enormes. Con el reactor se reponían en semanas; sin él, cada pérdida pesa.' },
+      { nombre: 'Legiones', texto: 'Unidad básica del ejército imperial. Arlik las está concentrando bajo su mando directo.' },
+      { nombre: 'Nizarios', texto: 'La élite del ejército de Rilur. Junto a los Nighul son el orgullo del Imperio.' },
+      { nombre: 'Nighul', texto: 'La élite de la élite: cada uno equivale a cien Nizarios. Son guerreros y clones de selección genética, con un entrenamiento intenso e inhumano y años de veteranía. El Reactor Oscuro los unía mental y energéticamente y potenciaba sus poderes arcanos. Sin él no son lo que eran, pero siguen siendo temidos. También son los mejores científicos, filósofos e ingenieros de la galaxia.' },
+      { nombre: 'Flotas y almirantes', texto: 'Armadas imperiales. En el interregno, cada almirante actuaba como un señor independiente.' }
+    ],
+    cultura: 'Orden, jerarquía y prestigio militar. Rilur admira a sus Nighul y Nizarios como guerreros y como sabios. {Existe una nostalgia extendida por la paz impuesta, cuando la energía del reactor era barata y la galaxia estaba en orden.} Desde Reus convive una tradición parlamentaria joven y frágil.',
+    relaciones: [
+      { con: 'dubitsa', tipo: 'Rival', texto: 'La conquistó en el Tomo I y luchó a su lado en la Coalición Definitiva. Hoy Dubitsa observa su caos con ambición.' },
+      { con: 'vinica', tipo: 'Tensa', texto: 'Enemiga histórica, sometida con la Paz de Hierro. Aliada en la Coalición.' },
+      { con: 'andalus', tipo: 'Enemigo', texto: 'Enemigo mortal desde la invasión del Tomo IV. Mató a Muwiya y derrotó a Rahman.' },
+      { con: 'principados', tipo: 'Desconfianza', texto: 'Los conquistó en el Tomo I y hoy los teme unidos.' },
+      { con: 'sintonia', tipo: 'Enemigo histórico', texto: 'Los Caballeros mataron al Primer Emperador y destruyeron el reactor, pero lucharon junto a Ublek en Turonis.' }
+    ],
+    jugabilidad: 'Hordas y élites. Producción masiva de clones y droides (casi gratis en la era del reactor y cara después), Nizarios como infantería de élite y Nighul como unidades heroicas que valen por cien. Mecánica de legitimidad (Parlamento, ejército, Moffs) en la era de Arlik.',
+    ganchos: [
+      'La guerra de Arlik contra los Moffs rebeldes.',
+      'Una campaña en la era del reactor, con la economía «infinita» como mecánica.',
+      '¿Quedan secretos del Reactor Oscuro en las ruinas de Raqut?'
+    ]
+  },
+
+  /* ============================================================ DUBITSA */
+  {
+    id: 'dubitsa',
+    nombre: 'Imperio de Dubitsa',
+    color: '#f59e0b',
+    estado: 'Ascendente',
+    poder: 35,
+    lema: '{«El saber es la primera muralla»}',
+    capital: 'Dubitsa Prime (ciudad de Instantinopla)',
+    gobierno: 'Imperio de la dinastía de los Teosio. Sociedad muy organizada. {Las universidades tienen voz en el consejo imperial.}',
+    resumenActual: 'Bajo el Emperador Teosio III, Dubitsa florece. Sus guerreros de élite Pretoni son numerosos y leales, su industria es poderosa y sus universidades salvaguardan el conocimiento. Observa el caos de Rilur con ambición calculadora.',
+    codice: 'Una civilización ancestral centrada en la ciencia, la filosofía y el combate disciplinado. Aniquilados y absorbidos por Rilur, resurgieron de las cenizas durante la guerra civil. Liderados por el Emperador Teosio III, su sociedad está altamente organizada. Sus guerreros Pretoni son una fuerza de élite temida en toda la galaxia. Dubitsa valora el conocimiento y la estrategia por encima de la fuerza bruta, y se posiciona para llenar el vacío de poder dejado por Rilur.',
+    historia: [
+      { titulo: 'La civilización ancestral', texto: 'Ciencia, filosofía y combate disciplinado. Sus universidades, {con centro en Instantinopla,} son las guardianas del saber de la galaxia.' },
+      { titulo: 'La coalición de Lolop', texto: 'Se une a Vinica y a los Caballeros de la Sintonía contra el expansionismo de Rilur en la Batalla de Orion-34.' },
+      { titulo: 'La aniquilación', texto: 'Tras Lolop, el este cae y Rilur aniquila y absorbe Dubitsa. {Su dinastía es derrocada y los Pretoni pasan a la clandestinidad.}' },
+      { titulo: 'El renacer', texto: 'Durante la guerra civil, Dubitsa resurge de sus cenizas. Teosio II restaura el imperio {y reabre las universidades}.' },
+      { titulo: 'La tregua', texto: 'Reus firma la paz con Dubitsa y reconoce sus fronteras {(Tregua de Instantinopla)}.' },
+      { titulo: 'Caída y liberación', texto: 'Muwiya conquista Dubitsa Prime en la Última Gran Guerra. La Coalición Definitiva la libera y Dubitsa combate en primera línea contra Rahman.' },
+      { titulo: 'El ascenso', texto: 'Con Teosio III, Dubitsa es la potencia más fuerte de la galaxia y se prepara para ocupar el vacío que deja Rilur.' }
+    ],
+    gobernantes: [
+      { nombre: '{La antigua dinastía}', titulo: '', periodo: '… – 1 DO', nota: 'Derrocada al caer el este.' },
+      { nombre: 'Ocupación de Rilur', titulo: '', periodo: '1 – {c. 30} DO', nota: 'Dubitsa absorbida por el Imperio.' },
+      { nombre: 'Teosio II', titulo: 'el Restaurador', periodo: '{c. 30 – 62} DO', nota: 'Restaura Dubitsa y lucha en la Coalición Definitiva.' },
+      { nombre: 'Teosio III', titulo: '', periodo: '{62} DO – presente', nota: 'Hijo de Teosio II. Dubitsa en ascenso.' }
+    ],
+    ejercito: [
+      { nombre: 'Pretoni', texto: 'Guerreros de élite temidos en toda la galaxia, numerosos y leales. {Son soldados formados en las academias, tan entrenados en estrategia como en combate.}' },
+      { nombre: '{Flota de Instantinopla}', texto: '{Armada moderna, apoyada por una industria poderosa.}' },
+      { nombre: '{Ingenieros de las universidades}', texto: '{La ciencia dubitsana aplicada a la guerra: tecnología superior en lugar de números.}' }
+    ],
+    cultura: 'Valoran el conocimiento y la estrategia por encima de la fuerza bruta. Su sociedad está muy organizada. {Su memoria colectiva está marcada por haber sido aniquilados dos veces y haber renacido otras dos.}',
+    relaciones: [
+      { con: 'rilur', tipo: 'Rival', texto: 'Antiguo conquistador. Hoy Dubitsa aspira a sustituirlo.' },
+      { con: 'vinica', tipo: 'Aliada', texto: 'Compañera de coalición en Lolop y en Turonis.' },
+      { con: 'andalus', tipo: 'Enemigo', texto: 'Muwiya conquistó su capital.' },
+      { con: 'principados', tipo: 'Vecinos', texto: '{Vecinos del este. Dubitsa quiere influir sobre la Unión.}' },
+      { con: 'sintonia', tipo: 'Respeto', texto: 'Aliados en Lolop.' }
+    ],
+    jugabilidad: 'Tecnología y estrategia. Unidades caras pero superiores, investigación rápida gracias a las universidades y Pretoni como élite disciplinada. Funciona mejor a largo plazo.',
+    ganchos: [
+      'El juego de Teosio III para ocupar el vacío de Rilur.',
+      'La resistencia clandestina de los Pretoni durante la ocupación.',
+      'El asedio y la liberación de Instantinopla.'
+    ]
+  },
+
+  /* ============================================================ VINICA */
+  {
+    id: 'vinica',
+    nombre: 'República de Vinica',
+    color: '#3b82f6',
+    estado: 'Reconstructiva',
+    poder: 20,
+    lema: '{«Libertad, comercio y palabra»}',
+    capital: 'Vinica Prime',
+    gobierno: 'Democracia interestelar gobernada por un Senado. {Un Canciller elegido por el Senado dirige el ejecutivo.}',
+    resumenActual: 'Optando por la paz y la prosperidad, Vinica se ha desmilitarizado en gran medida para centrarse en la reconstrucción y el comercio. Su Senado cree que la fortaleza económica es la mejor defensa, una postura vista como ingenua por otros.',
+    codice: 'Una democracia interestelar que valora la libertad, el comercio y la diplomacia. Fue casi destruida por Rilur, sobreviviendo gracias a alianzas desesperadas y tratados humillantes. En la era actual, ha apostado fuertemente por la desmilitarización y la reconstrucción económica. Mientras sus rutas comerciales florecen, su capacidad para defenderse es cuestionada por sus vecinos más militaristas.',
+    historia: [
+      { titulo: 'La república comercial', texto: 'Libertad, comercio y diplomacia. {Sus rutas conectaban el oeste galáctico con el núcleo.}' },
+      { titulo: 'La alianza desesperada', texto: 'Ante el avance de Rilur, forja una alianza con los Caballeros de la Sintonía y con Dubitsa.' },
+      { titulo: 'El tratado humillante', texto: 'Tras la caída del este, firma un tratado humillante para sobrevivir {(la Paz de Hierro): cede territorio, limita su flota y paga tributo.}' },
+      { titulo: 'La liberación', texto: 'Kefra destruye el Reactor Oscuro y su campaña libera Vinica Prime y Polus-12.' },
+      { titulo: 'Fortalecida en el caos', texto: 'Se refuerza durante la guerra civil y firma la tregua con Reus.' },
+      { titulo: 'La Coalición Definitiva', texto: 'Lucha junto a Dubitsa y Rilur contra Rahman. {El pacto de la Coalición se firma en Vinica Prime.}' },
+      { titulo: 'La apuesta por la paz', texto: 'Se desmilitariza para centrarse en la reconstrucción y el comercio. Sus rutas florecen y su defensa está en duda.' }
+    ],
+    gobernantes: [
+      { nombre: 'Senado de Vinica', titulo: '', periodo: 'Toda la historia', nota: '{Los nombres de los cancilleres están pendientes.}' }
+    ],
+    ejercito: [
+      { nombre: '{Flota republicana}', texto: '{Fue clave en Lolop y en Turonis. Hoy está muy reducida.}' },
+      { nombre: '{Fábricas de Polus-12}', texto: '{El gran mundo industrial de la República abasteció a la rebelión y a la Coalición.}' }
+    ],
+    cultura: 'Libertad, comercio y diplomacia. Su Senado cree que la fortaleza económica es la mejor defensa. {Conserva una memoria amarga de la Paz de Hierro y una gratitud profunda hacia Kefra.}',
+    relaciones: [
+      { con: 'rilur', tipo: 'Tensa', texto: 'Casi la destruyó, pero fue su aliada contra Andalus.' },
+      { con: 'dubitsa', tipo: 'Aliada', texto: 'Compañera de coalición. Hoy la mira con cautela.' },
+      { con: 'sintonia', tipo: 'Aliada histórica', texto: 'Fue la primera potencia en aliarse con los Caballeros.' },
+      { con: 'andalus', tipo: 'Amenaza', texto: 'Sus piratas acechan las rutas comerciales de Vinica.' },
+      { con: 'principados', tipo: 'Comercio', texto: '{Socios comerciales.}' }
+    ],
+    jugabilidad: 'Economía y diplomacia. Comercio muy fuerte y alianzas. Su ejército es pequeño, pero puede comprar defensa (mercenarios, flota de reserva). Vulnerable si la sorprenden.',
+    ganchos: [
+      'Proteger las rutas comerciales de los piratas de Andalus.',
+      'El debate en el Senado sobre volver a rearmarse.',
+      'La liberación de Vinica Prime contada desde dentro.'
+    ]
+  },
+
+  /* ============================================================ PRINCIPADOS */
+  {
+    id: 'principados',
+    nombre: 'Principados del Este',
+    color: '#10b981',
+    estado: 'Unificados',
+    poder: 15,
+    lema: '{«Muchos estandartes, una sola bandera»}',
+    capital: 'Unión del Este',
+    gobierno: 'Confederación de sistemas antes independientes, sin un mando centralizado. {Hay un Consejo de Príncipes con sede en la Unión del Este.}',
+    resumenActual: 'Antiguos rivales, estos principados se han unido bajo una sola bandera para asegurar su supervivencia. Su poder militar combinado es considerable, pero carecen de una doctrina y un liderazgo centralizados, lo que los hace impredecibles.',
+    codice: 'Una confederación de sistemas estelares anteriormente independientes y a menudo enfrentados entre sí. La amenaza constante de los grandes imperios los forzó a una unificación pragmática. Su fuerza reside en su diversidad y adaptabilidad, pero su debilidad es la falta de un mando centralizado. Son un poder emergente e impredecible en la escena galáctica.',
+    historia: [
+      { titulo: 'Siglos de rivalidad', texto: 'Sistemas independientes que a menudo luchaban entre sí.' },
+      { titulo: 'La caída del este', texto: 'En el Tomo I, el este galáctico cae ante Rilur {y los principados son conquistados uno por uno}.' },
+      { titulo: '{La libertad recuperada}', texto: '{Recuperan la independencia en la guerra civil del Tomo IV, pero vuelven a sus viejas rivalidades.}' },
+      { titulo: 'La unificación', texto: 'La amenaza constante de los grandes imperios los obliga a una unificación pragmática {después de la Última Gran Guerra}.' }
+    ],
+    gobernantes: [
+      { nombre: '{Consejo de Príncipes}', titulo: '', periodo: '{c. 59} DO – presente', nota: '{Los nombres de los príncipes están pendientes.}' }
+    ],
+    ejercito: [
+      { nombre: '{Ejércitos de los principados}', texto: '{Cada principado mantiene sus propias tropas y doctrinas. Juntas suman una fuerza considerable, pero no siempre coordinada.}' }
+    ],
+    cultura: 'Diversidad y adaptabilidad. {Mantienen identidades locales muy fuertes y desconfían de cualquier poder central, incluido el suyo propio.}',
+    relaciones: [
+      { con: 'rilur', tipo: 'Miedo', texto: 'Su antiguo conquistador.' },
+      { con: 'dubitsa', tipo: 'Vecinos', texto: '{La potencia vecina más peligrosa.}' },
+      { con: 'andalus', tipo: 'Enemigo', texto: '{Sus rutas sufren a los piratas.}' },
+      { con: 'vinica', tipo: 'Comercio', texto: '{Socios comerciales.}' }
+    ],
+    jugabilidad: 'Facción modular: cada principado aporta unidades distintas. Mucha adaptabilidad, pero la coordinación y la moral son variables por la falta de un mando central. Imprevisible tanto en manos de la IA como del jugador.',
+    ganchos: [
+      '¿Quién intentará convertirse en el primer gran príncipe de la Unión?',
+      'Los principados como bisagra entre Dubitsa y Rilur.'
+    ]
+  },
+
+  /* ============================================================ ANDALUS */
+  {
+    id: 'andalus',
+    nombre: 'Gaziato de Andalus',
+    color: '#8b5cf6',
+    estado: 'Dispersos',
+    poder: 5,
+    lema: '{«Volveremos a la tierra de nuestros padres»}',
+    capital: 'Portus (antigua capital en esta galaxia) · galaxia de Andalus (su origen)',
+    gobierno: 'Poder teocrático-militar. Lo gobierna el Emperador de Andalus, que tiene numerosos hijos. {Su título es el de Gran Gazi.} {Muwiya proclamó el Gaziato en Portus como el dominio de Andalus en esta galaxia.}',
+    resumenActual: 'Tras la derrota de la Expedición de Venganza, el poder de Andalus en esta galaxia se ha reducido a flotas piratas y enclaves aislados. Ya no son una amenaza unificada, pero siguen siendo una molestia peligrosa en las rutas comerciales.',
+    codice: 'Originarios de otra galaxia, los Hijos de Andalus invadieron con un fervor teocrático-militar para "recuperar" territorios ancestrales. Liderados por figuras carismáticas como Muwiya y Rahman, su poder militar era formidable. Tras la catastrófica derrota de su Expedición de Venganza, su imperio en esta galaxia se ha desintegrado en facciones piratas y señores de la guerra, aunque su ideología y su rencor perduran.',
+    historia: [
+      { titulo: '{Los antepasados}', texto: '{Hace muchos siglos, los antepasados de Andalus vivieron en esta galaxia, con Portus como capital. Se marcharon por el Paso del Vacío, y sus libros sagrados prometen el regreso.} De ahí su reivindicación de los «territorios ancestrales».' },
+      { titulo: 'La invasión de Rilur', texto: 'Rilur invade la galaxia de Andalus en el Tomo IV. Es una masacre para el Imperio: casi nadie vuelve. Andalus descubre el camino y gana un rencor nuevo.' },
+      { titulo: 'La invasión de Muwiya', texto: 'Los Hijos de Andalus invaden liderados por el General Muwiya. {Proclama el Gaziato en Portus.} Conquista Dubitsa Prime y empuja a Reus al sacrificio.' },
+      { titulo: 'La muerte de Muwiya', texto: 'Ublek derrota a Vakel y a Muwiya, que muere. Su muerte es la causa de la Expedición de Venganza.' },
+      { titulo: 'La Expedición de Venganza', texto: 'El Príncipe Rahman, hijo del Emperador de Andalus, llega para vengar a Muwiya. Es derrotado por la Coalición Definitiva {en Turonis}.' },
+      { titulo: 'La dispersión', texto: 'El imperio de Andalus en esta galaxia se desintegra en facciones piratas y señores de la guerra. Su ideología y su rencor perduran.' }
+    ],
+    gobernantes: [
+      { nombre: 'Emperador de Andalus', titulo: '{Gran Gazi}', periodo: 'En su galaxia', nota: '{Su nombre está pendiente.} Tiene numerosos hijos, entre ellos Rahman y Alid.' },
+      { nombre: 'Muwiya', titulo: 'General', periodo: '{52 – 56} DO', nota: 'Lidera la invasión. {Proclama el Gaziato en Portus.}' },
+      { nombre: 'Rahman', titulo: 'Príncipe', periodo: '{56 – 58} DO', nota: 'Lidera la Expedición de Venganza.' }
+    ],
+    ejercito: [
+      { nombre: 'Hijos de Andalus', texto: 'Ejércitos movidos por un fervor teocrático-militar. Su poder militar era formidable.' },
+      { nombre: '{Flotas del Vacío}', texto: '{Armadas que cruzan el Paso del Vacío. Son rápidas y difíciles de contener.}' },
+      { nombre: 'Señores de la guerra y piratas', texto: 'Los restos actuales: flotas piratas y enclaves aislados que atacan las rutas comerciales.' }
+    ],
+    cultura: 'Teocrática y militar, con una ideología de retorno a los territorios ancestrales. {El honor y la venganza son deberes sagrados.} Su rencor perdura incluso tras la derrota.',
+    relaciones: [
+      { con: 'rilur', tipo: 'Enemigo mortal', texto: 'Invadió su galaxia y mató a Muwiya.' },
+      { con: 'dubitsa', tipo: 'Enemigo', texto: 'Conquistó su capital y la perdió.' },
+      { con: 'vinica', tipo: 'Presa', texto: 'Sus piratas atacan las rutas vinicanas.' },
+      { con: 'principados', tipo: 'Presa', texto: '{Atacan sus rutas.}' }
+    ],
+    jugabilidad: 'Fervor y movilidad. Ataques rápidos, moral alta y refuerzos que llegan del Vacío. En el presente funcionan como facción de saqueo (piratas y señores de la guerra).',
+    ganchos: [
+      'Los señores de la guerra piratas que siguen en las rutas.',
+      'La campaña de venganza del Príncipe Alid (en segundo plano).',
+      '¿Volverá el Emperador de Andalus con un tercer ejército?'
+    ]
+  },
+
+  /* ============================================================ SINTONÍA */
+  {
+    id: 'sintonia',
+    nombre: 'Caballeros de la Sintonía',
+    color: '#9ca3af',
+    estado: 'Casi extintos',
+    poder: null,
+    alias: 'También llamados Caballeros Ocultos (en notas antiguas, «Oscultos»)',
+    lema: '{«Afinar, no dominar»}',
+    capital: 'Riqtom, Santuario de la Sintonía',
+    gobierno: 'Orden monástica de maestros y discípulos. No busca el poder político.',
+    resumenActual: 'Casi extintos. {Su último gran maestro conocido, Kefra, desapareció en Turonis.} Riqtom sigue siendo su santuario.',
+    codice: 'Una orden ancestral de monjes guerreros que buscan el equilibrio en la Sintonía Universal, la energía que conecta todas las cosas. Casi extintos, su legado pervive a través de figuras legendarias como Saelen Vharr, Kemet y, más recientemente, Kefra, el Guardián del Bosque. No buscan poder político, sino que intervienen en momentos críticos para evitar que la galaxia caiga en una oscuridad total.',
+    historia: [
+      { titulo: 'La orden ancestral', texto: 'Monjes guerreros que buscan el equilibrio en la Sintonía Universal. Su propia sintonía se basa en la sintonía del universo.' },
+      { titulo: 'La disonancia', texto: 'La energía alterada del Reactor Oscuro desafina la Sintonía del universo. Por eso la orden se une a Vinica y Dubitsa contra el expansionismo de Rilur, en Lolop.' },
+      { titulo: 'Saelen Vharr', texto: 'El maestro vence a Lord Veylan en la Batalla de Orion-34. {La orden queda diezmada y se refugia en Riqtom.}' },
+      { titulo: 'Kemet', texto: 'El legendario Kemet lidera el contraataque y muere en duelo con el Emperador. Envía a su discípulo Raqid a buscar al Guardián del Bosque.' },
+      { titulo: 'Kefra', texto: 'Raqid encuentra a Kefra en Arcados. Kefra se entrena en otro plano, destruye el Reactor Oscuro, libera Vinica, inicia la guerra civil, lucha en Turonis y desaparece.' }
+    ],
+    gobernantes: [
+      { nombre: 'Saelen Vharr', titulo: 'Maestro', periodo: '… – {c. 8} DO', nota: 'Vencedor de Orion-34.' },
+      { nombre: 'Kemet', titulo: 'el Legendario', periodo: '{8} – 18 DO', nota: '{Discípulo de Saelen.} Muere con el Emperador.' },
+      { nombre: 'Raqid', titulo: '', periodo: '18 DO – …', nota: 'Discípulo de Kemet. {Sobrevive a Raqut.}' },
+      { nombre: 'Kefra', titulo: 'el Guardián del Bosque', periodo: '23 – {58} DO', nota: 'Desaparece en Turonis.' }
+    ],
+    ejercito: [
+      { nombre: 'Caballeros', texto: 'Muy pocos, pero decisivos. Intervienen en momentos críticos.' },
+      { nombre: '{Poderes de la Sintonía}', texto: '{Percibir la energía universal, combatir con capacidades potenciadas y, los más dotados, entrar en el otro plano (el Plano de la Resonancia).}' }
+    ],
+    cultura: 'Equilibrio por encima del poder. Viven ocultos {(de ahí el nombre de Caballeros Ocultos)}. No buscan poder político. {La relación entre maestro y discípulo es sagrada.}',
+    relaciones: [
+      { con: 'vinica', tipo: 'Aliada histórica', texto: 'Su primera alianza política en siglos.' },
+      { con: 'dubitsa', tipo: 'Aliada', texto: 'Juntos en Lolop.' },
+      { con: 'rilur', tipo: 'Enemigo histórico', texto: 'Por el Reactor Oscuro y los Nighul. Combatieron a su lado en Turonis.' },
+      { con: 'andalus', tipo: 'Enemigo', texto: 'Kefra luchó contra Rahman.' }
+    ],
+    jugabilidad: 'Unidades de héroe escasas y decisivas. No controlan territorio: intervienen como evento o como aliado en momentos críticos.',
+    ganchos: [
+      'La búsqueda de Kefra: ¿está vivo?',
+      'Reconstruir la orden en Riqtom.',
+      'El otro plano como escenario jugable.'
+    ]
+  }
+];
+
+</script>
+<script>/* datos/personajes.js */
+/*
+  HOLOCRÓN GALÁCTICO — Personajes
+  {llaves} = detalle propuesto, pendiente de aprobación.
+*/
+window.LORE = window.LORE || {};
+
+LORE.personajes = [
+  {
+    id: 'saelen-vharr', nombre: 'Saelen Vharr', titulos: 'Maestro de la Sintonía',
+    faccion: 'sintonia', vida: '{c. 60 AO – c. 8 DO}', tomos: ['I', 'II'],
+    rol: 'Héroe de Orion-34',
+    bio: 'Maestro de los Caballeros de la Sintonía en la Guerra de las Galaxias Fragmentadas. Encabezó a los caballeros que se aliaron con Vinica y Dubitsa y derrotó a Lord Veylan en la Batalla de Orion-34, en Lolop. Fue una victoria agridulce: el este cayó igualmente. {Se retiró a Riqtom con los supervivientes y formó a Kemet hasta su muerte.}',
+    destino: '{Muere de vejez en Riqtom, hacia el 8 DO.}'
+  },
+  {
+    id: 'veylan', nombre: 'Lord Veylan', titulos: 'Señor de la guerra de Rilur',
+    faccion: 'rilur', vida: '{… – 0 DO}', tomos: ['I'],
+    rol: 'Antagonista del Tomo I',
+    bio: 'Señor de la guerra del Imperio de Rilur, al mando de la ofensiva en Orion-34. No usaba la Sintonía: su poder eran los ejércitos de clones y droides que le daba el reactor. {Tenía fama de no haber perdido nunca una campaña.} Fue derrotado por Saelen Vharr en un duelo que se convirtió en leyenda.',
+    destino: '{Muere en el duelo de Lolop.}'
+  },
+  {
+    id: 'sarkon', nombre: '{Sarkon}', titulos: 'Primer Emperador, el Emperador Original',
+    faccion: 'rilur', vida: '{… – 18 DO}', tomos: ['I', 'II'],
+    rol: 'Emperador de la era del Reactor Oscuro',
+    bio: 'El emperador de Rilur con el que empieza la saga. Bajo su reinado, el Reactor Oscuro llevó al Imperio a su máxima expansión. Tras la destrucción de Rilit presentó a su élite, los Nighul. {Fue el primero en unirse al reactor, lo que le daba una fuerza impropia de su edad.} Murió en un duelo contra Kemet, que pereció con él. Su muerte provocó una gran crisis en el centro del Imperio.',
+    destino: 'Muere en duelo con Kemet ({18 DO}).'
+  },
+  {
+    id: 'kemet', nombre: 'Kemet', titulos: 'el Legendario',
+    faccion: 'sintonia', vida: '{c. 25 AO – 18 DO}', tomos: ['I', 'II'],
+    rol: 'Héroe del Tomo II',
+    bio: '{Discípulo de Saelen Vharr, combatió a su lado en Lolop.} Durante la paz impuesta se convirtió en una leyenda de la resistencia. Tras la destrucción de Rilit y la cacería de los Nighul, lideró un contraataque contra el corazón del Imperio y venció al Emperador en un duelo mortal en el que ambos murieron. Antes de morir envió a su discípulo Raqid a buscar al Guardián del Bosque.',
+    destino: 'Muere en duelo con el Emperador ({18 DO}).'
+  },
+  {
+    id: 'raqid', nombre: 'Raqid', titulos: 'Discípulo de Kemet',
+    faccion: 'sintonia', vida: '{c. 7 AO – ?}', tomos: ['II', 'III'],
+    rol: 'Mentor de Kefra',
+    bio: 'Discípulo de Kemet. Cumplió su última orden: buscó durante cinco años al Guardián del Bosque y encontró a Kefra en Arcados. Lo llevó a entrenarse en otro plano. {Lo acompañó al asalto de Raqut y se quedó atrás conteniendo a los Nighul mientras Kefra destruía el reactor.}',
+    destino: '{Sobrevive a Raqut con heridas graves. Su destino posterior está pendiente.}'
+  },
+  {
+    id: 'kefra', nombre: 'Kefra', titulos: 'el Guardián del Bosque',
+    faccion: 'sintonia', vida: '{c. 7 DO – desaparecido en 58 DO}', tomos: ['III', 'IV', 'V', 'VI'],
+    rol: 'Protagonista de los Tomos III y IV',
+    bio: 'Joven de Arcados con un vínculo poderoso con la Sintonía. Tras un entrenamiento acelerado en otro plano, destruyó el Reactor Oscuro y lideró la campaña rebelde que liberó Vinica Prime y Polus-12, convirtiéndose en símbolo de esperanza. Aprovechó el desastre de Andalus para iniciar una guerra civil galáctica total. {Tras la tregua se retiró.} Reapareció para luchar en la Coalición Definitiva contra Rahman y después desapareció.',
+    destino: 'Desaparecido tras la batalla contra Rahman. No hay cuerpo ni testigos de su muerte.'
+  },
+  {
+    id: 'korvan', nombre: '{Korvan}', titulos: '{Gran Mariscal}, Emperador de Rilur, {el Implacable}',
+    faccion: 'rilur', vida: '{c. 32 AO – 33 DO}', tomos: ['II', 'III', 'IV', 'V'],
+    rol: 'Emperador de los Tomos III–V',
+    bio: 'El sucesor del Primer Emperador, de otra línea. {Era Gran Mariscal de los ejércitos y tomó el trono en la crisis posterior al duelo.} Perdió el reactor, resistió y lanzó una invasión desastrosa contra la galaxia de Andalus: casi nadie volvió. Regresó herido y furioso, desató una contraofensiva brutal y provocó la guerra civil total. Padre de Reus.',
+    destino: 'Muere por sus heridas ({33 DO}).'
+  },
+  {
+    id: 'reus', nombre: 'Reus', titulos: 'Emperador de Rilur, {el Reformador}',
+    faccion: 'rilur', vida: '{c. 5 AO – 55 DO}', tomos: ['V', 'VI'],
+    rol: 'El emperador de la paz',
+    bio: 'Hijo de Korvan. Al heredar el trono buscó la paz: firmó una tregua con Dubitsa y Vinica, reorientó el Imperio hacia fuentes de energía limpias e introdujo un sistema parlamentario. Rilur se democratizó un poco y la luz volvió. Cuando invadieron los Hijos de Andalus, cayó en un sacrificio para ganar tiempo {en Raqut}.',
+    destino: 'Muere en sacrificio ({55 DO}).'
+  },
+  {
+    id: 'ublek', nombre: 'Ublek', titulos: 'Emperador de Rilur, {el Defensor}',
+    faccion: 'rilur', vida: '{c. 15 – 64 DO}', tomos: ['VI', 'VII'],
+    rol: 'Héroe del Tomo VI',
+    bio: 'Hijo de Reus. Tomó el mando tras el sacrificio de su padre, derrotó al general Vakel {en Rilit}, repelió a Andalus y mató a Muwiya. Lideró a Rilur dentro de la Coalición Definitiva junto a Teosio II y Kefra, y derrotó al Príncipe Rahman. Sobrevivió gravemente herido. Tuvo un hijo al que nunca reconoció: Arlik.',
+    destino: 'Muere años después por sus heridas ({64 DO}) y deja el trono vacío.'
+  },
+  {
+    id: 'arlik', nombre: 'Arlik', titulos: 'el Heredero Bastardo, Emperador guerrero',
+    faccion: 'rilur', vida: '{c. 40 DO – }', tomos: ['VII'],
+    rol: 'Protagonista del presente',
+    bio: 'Hijo no reconocido de Ublek. {Su madre era una ingeniera Nighul.} Creció en el exilio bajo la guía de su mentor Nighul, Trok. Volvió con una legión secreta, se proclamó heredero en la capital con un apoyo débil del Parlamento y la hostilidad de la élite militar, y aplastó la rebelión de Uxal pese a la inferioridad numérica. Hoy purga a los comandantes desleales y concentra las legiones bajo su mando.',
+    destino: 'Vivo. Emperador de Rilur en guerra por el dominio total del Imperio.'
+  },
+  {
+    id: 'trok', nombre: 'Trok', titulos: 'Mentor Nighul',
+    faccion: 'rilur', vida: '{c. 20 AO – }', tomos: ['VII'],
+    rol: 'Mentor de Arlik',
+    bio: 'Nighul y mentor de Arlik, al que guió en el exilio y en su regreso. {Es un veterano de la época del reactor, uno de los pocos Nighul que sobrevivieron a su destrucción sin perder la razón. Enseñó a Arlik el combate, la ciencia, la filosofía y la ingeniería de los Nighul.}',
+    destino: 'Vivo.'
+  },
+  {
+    id: 'teosio-ii', nombre: 'Teosio II', titulos: 'Emperador de Dubitsa, el Restaurador',
+    faccion: 'dubitsa', vida: '{c. 5 AO – 62 DO}', tomos: ['IV', 'V', 'VI'],
+    rol: 'Restaurador de Dubitsa',
+    bio: 'Restauró Dubitsa durante la guerra civil, reuniendo a los Pretoni que habían sobrevivido en la clandestinidad. {Firmó la tregua con Reus.} Perdió Dubitsa Prime ante Muwiya, se unió a la Coalición Definitiva con Ublek y Kefra, recuperó su capital y luchó contra Rahman. Padre de Teosio III.',
+    destino: '{Muere hacia el 62 DO.}'
+  },
+  {
+    id: 'teosio-iii', nombre: 'Teosio III', titulos: 'Emperador de Dubitsa',
+    faccion: 'dubitsa', vida: '{c. 30 DO – }', tomos: ['VII'],
+    rol: 'Soberano de la potencia en ascenso',
+    bio: 'Hijo de Teosio II. Bajo su gobierno Dubitsa florece: Pretoni numerosos y leales, una industria poderosa y universidades que guardan el saber. Observa el caos de Rilur con ambición calculadora.',
+    destino: 'Vivo.'
+  },
+  {
+    id: 'muwiya', nombre: 'Muwiya', titulos: 'General de Andalus',
+    faccion: 'andalus', vida: '{… – 56 DO}', tomos: ['VI'],
+    rol: 'Antagonista del Tomo VI',
+    bio: 'Figura carismática que lideró la invasión de los Hijos de Andalus. {Proclamó el Gaziato de Andalus en Portus.} Conquistó Dubitsa Prime y obligó a Reus a sacrificarse. Ublek lo derrotó y murió, y su muerte provocó la Expedición de Venganza.',
+    destino: 'Muere frente a Ublek ({Segunda Batalla de Orion-34}).'
+  },
+  {
+    id: 'vakel', nombre: 'Vakel', titulos: 'General de Andalus',
+    faccion: 'andalus', vida: '{… – 55 DO?}', tomos: ['VI'],
+    rol: 'Lugarteniente de Muwiya',
+    bio: 'General de Andalus a las órdenes de Muwiya. Fue derrotado por Ublek {cuando intentaba destruir las forjas de Rilit}.',
+    destino: '{Derrotado en Rilit. Pendiente decidir si murió o fue capturado.}'
+  },
+  {
+    id: 'rahman', nombre: 'Rahman', titulos: 'Príncipe de Andalus, {«el Intrépido»}',
+    faccion: 'andalus', vida: '{… – 58 DO}', tomos: ['VI'],
+    rol: 'Antagonista final del Tomo VI',
+    bio: 'Uno de los numerosos hijos del Emperador de Andalus. Lideró la Expedición de Venganza para vengar la muerte de Muwiya. La Coalición Definitiva (Dubitsa, Vinica y Rilur) lo derrotó en una batalla apocalíptica {en Turonis}.',
+    destino: '{Muere en Turonis.}'
+  },
+  {
+    id: 'alid', nombre: 'Alid', titulos: 'Príncipe de Andalus',
+    faccion: 'andalus', vida: '¿?', tomos: ['VI'],
+    rol: 'Personaje en segundo plano',
+    bio: 'Probablemente uno de los numerosos hijos del Emperador de Andalus, que llevó alguna campaña de venganza a la galaxia de Rilur. El autor lo deja en segundo plano por ahora.',
+    destino: 'Pendiente.'
+  },
+  {
+    id: 'emperador-andalus', nombre: 'Emperador de Andalus', titulos: '{Gran Gazi}',
+    faccion: 'andalus', vida: '¿?', tomos: ['IV', 'VI'],
+    rol: 'Soberano de Andalus',
+    bio: 'Gobernante de los Hijos de Andalus en su galaxia de origen. Tiene numerosos hijos, entre ellos los príncipes Rahman y Alid. {Su nombre está pendiente.}',
+    destino: 'Vivo, en su galaxia.'
+  }
+];
+
+</script>
+<script>/* datos/mundo.js */
+/*
+  HOLOCRÓN GALÁCTICO — Lugares, batallas, cronología, glosario y registro de canon
+  {llaves} = detalle propuesto, pendiente de aprobación.
+  Coordenadas del mapa: top/left en %, como en la web original.
+*/
+window.LORE = window.LORE || {};
+
+/* ------------------------------------------------------------ LUGARES */
+LORE.lugares = [
+  { id: 'rilur-prime', nombre: 'Rilur Prime', faccion: 'rilur', afiliacion: 'Imperio de Rilur', top: 50, left: 50, src: 'O',
+    tipo: 'Capital imperial',
+    texto: 'Centro del Imperio de Rilur. {Escenario del duelo entre Kemet y el Primer Emperador.} Allí se proclama heredero Arlik.' },
+  { id: 'dubitsa-prime', nombre: 'Dubitsa Prime', faccion: 'dubitsa', afiliacion: 'Imperio de Dubitsa', top: 30, left: 75, src: 'O',
+    tipo: 'Capital imperial · ciudad de Instantinopla',
+    texto: 'Corazón de Dubitsa. Su gran ciudad es Instantinopla, sede del trono y de las universidades. Absorbida por Rilur en el Tomo I, restaurada por Teosio II, conquistada por Muwiya y liberada por la Coalición Definitiva.' },
+  { id: 'vinica-prime', nombre: 'Vinica Prime', faccion: 'vinica', afiliacion: 'República de Vinica', top: 70, left: 25, src: 'O',
+    tipo: 'Capital republicana · sede del Senado',
+    texto: 'Capital de la República. Liberada por la campaña de Kefra tras la destrucción del Reactor Oscuro. {Allí se firmó el pacto de la Coalición Definitiva.}' },
+  { id: 'polus-12', nombre: 'Polus-12', faccion: 'vinica', afiliacion: 'República de Vinica', top: 81, left: 33, src: 'A',
+    tipo: 'Mundo industrial',
+    texto: 'Gran mundo industrial de Vinica, liberado junto con Vinica Prime. {Sus fábricas abastecieron a la rebelión y a la Coalición.}' },
+  { id: 'union-este', nombre: 'Unión del Este', faccion: 'principados', afiliacion: 'Principados del Este', top: 75, left: 80, src: 'O',
+    tipo: 'Sede de la confederación',
+    texto: 'Centro de los Principados del Este unificados. {Sede del Consejo de Príncipes.}' },
+  { id: 'arcados', nombre: 'Arcados', faccion: 'neutral', afiliacion: 'Mundo neutral (origen de Kefra)', top: 15, left: 15, src: 'O',
+    tipo: 'Mundo-bosque neutral',
+    texto: 'Mundo neutral del noroeste lejano y lugar de origen de Kefra, donde lo encontró Raqid. {Está cubierto de bosques antiguos y es uno de los accesos al otro plano.}' },
+  { id: 'portus', nombre: 'Portus', faccion: 'andalus', afiliacion: 'Antigua capital de Andalus', top: 45, left: 90, src: 'O',
+    tipo: 'Antigua capital · puerta del Vacío',
+    texto: 'Antigua capital de Andalus en esta galaxia. {Allí proclamó Muwiya el Gaziato. Está junto al Paso del Vacío. Quedó abandonada tras la derrota de Rahman.}' },
+  { id: 'riqtom', nombre: 'Riqtom', faccion: 'sintonia', afiliacion: 'Santuario de la Sintonía', top: 85, left: 55, src: 'O',
+    tipo: 'Santuario',
+    texto: 'Santuario de los Caballeros de la Sintonía. {Refugio de la orden después de Lolop. Allí murió Saelen Vharr y allí se formó Kemet.}' },
+  { id: 'lolop', nombre: 'Lolop (Orion-34)', faccion: 'rilur', afiliacion: 'Sistema Orion-34', top: 35, left: 63, src: 'A',
+    tipo: 'Planeta de batalla',
+    texto: 'Planeta principal del sistema Orion-34, donde la coalición de Vinica, Dubitsa y la Sintonía se enfrentó al expansionismo de Rilur y Saelen Vharr derrotó a Lord Veylan. {Escenario también de la Segunda Batalla de Orion-34, donde murió Muwiya.}' },
+  { id: 'raqut', nombre: 'Raqut', faccion: 'rilur', afiliacion: 'Imperio de Rilur', top: 54, left: 66, src: 'A',
+    tipo: 'Mundo del Reactor Oscuro',
+    texto: 'Mundo donde estaba el Reactor Oscuro, destruido por Kefra. {Es un mundo herido en el paso hacia el núcleo, donde Reus cayó para frenar a Andalus.}' },
+  { id: 'rilit', nombre: 'Rilit', faccion: 'rilur', afiliacion: 'Imperio de Rilur', top: 39, left: 43, src: 'A',
+    tipo: 'Luna-forja',
+    texto: 'Luna-forja con la mega-instalación militar que destruyó la facción rebelde en el Tomo II. {Reconstruida con Reus para funcionar con energía limpia. Allí venció Ublek a Vakel.}' },
+  { id: 'uxal', nombre: 'Uxal', faccion: 'rilur', afiliacion: 'Imperio de Rilur (recuperado)', top: 20, left: 40, src: 'O',
+    tipo: 'Mundo rebelde',
+    texto: 'Foco de la rebelión del interregno. La victoria de Arlik en Uxal consolidó su legitimidad.' },
+  { id: 'turonis', nombre: '{Turonis}', faccion: 'neutral', afiliacion: 'Campo de batalla', top: 63, left: 72, src: 'P',
+    tipo: 'Mundo estratégico',
+    texto: '{Cruce de rutas entre Portus, el núcleo y el sur. Escenario de la batalla apocalíptica en la que la Coalición Definitiva derrotó al Príncipe Rahman.}' },
+  { id: 'paso-vacio', nombre: '{Paso del Vacío}', faccion: 'andalus', afiliacion: 'Hacia la galaxia de Andalus', top: 52, left: 97, src: 'P',
+    tipo: 'Corredor intergaláctico',
+    texto: '{Único corredor conocido hacia la galaxia de Andalus, más allá de Portus. Por él pasaron la invasión de Korvan y las de Muwiya y Rahman.}' }
+];
+
+/* ------------------------------------------------------------ BATALLAS Y ACONTECIMIENTOS */
+LORE.batallas = [
+  { id: 'lolop', nombre: 'Batalla de Orion-34 (Lolop)', anio: 0, tomo: 'I', lugar: 'lolop',
+    bandos: 'Coalición (Vinica, Dubitsa, Caballeros de la Sintonía) contra Rilur',
+    mandos: 'Saelen Vharr · Lord Veylan',
+    resultado: 'Victoria de la coalición. Saelen Vharr derrota a Lord Veylan.',
+    consecuencias: 'Victoria agridulce: Rilur rodea el frente y conquista el este, incluida Dubitsa.' },
+  { id: 'rilit-sabotaje', nombre: 'Destrucción de Rilit', anio: 18, tomo: 'II', lugar: 'rilit',
+    bandos: 'Facción rebelde contra Rilur',
+    mandos: '{Células de Kemet}',
+    resultado: 'Destruida la mega-instalación militar imperial.',
+    consecuencias: 'La ira del Emperador: aparecen los Nighul.' },
+  { id: 'duelo-rilur-prime', nombre: 'Duelo de Kemet y el Emperador', anio: 18, tomo: 'II', lugar: 'rilur-prime',
+    bandos: 'Caballeros de la Sintonía contra el Emperador de Rilur',
+    mandos: 'Kemet · {Sarkon}',
+    resultado: 'Mueren los dos.',
+    consecuencias: 'Gran crisis del centro imperial. {Korvan toma el trono.} Raqid parte a buscar al Guardián del Bosque.' },
+  { id: 'reactor-raqut', nombre: 'Destrucción del Reactor Oscuro', anio: 25, tomo: 'III', lugar: 'raqut',
+    bandos: 'Kefra {y Raqid} contra los Nighul',
+    mandos: 'Kefra',
+    resultado: 'Reactor Oscuro destruido.',
+    consecuencias: 'Rilur pierde la energía casi ilimitada. {Los Nighul quedan rotos.} Se abre el camino para liberar Vinica.' },
+  { id: 'liberacion-vinica', nombre: 'Liberación de Vinica Prime y Polus-12', anio: 26, tomo: 'III', lugar: 'vinica-prime',
+    bandos: 'Rebelión de Kefra contra la guarnición de Rilur',
+    mandos: 'Kefra',
+    resultado: 'Vinica Prime y Polus-12 liberados.',
+    consecuencias: 'Kefra se convierte en símbolo de esperanza. Vinica vuelve a ser libre.' },
+  { id: 'invasion-andalus', nombre: 'Invasión de la galaxia de Andalus', anio: 28, tomo: 'IV', lugar: 'paso-vacio',
+    bandos: 'Rilur contra Andalus',
+    mandos: '{Korvan}',
+    resultado: 'Desastre: Rilur pierde millones de tropas y casi nadie vuelve.',
+    consecuencias: 'Rilur pierde gran parte de su ejército. Andalus conoce el camino y acumula rencor.' },
+  { id: 'contraofensiva-korvan', nombre: 'Contraofensiva de Korvan', anio: 29, tomo: 'IV', lugar: 'rilur-prime',
+    bandos: 'Rilur contra los mundos rebeldes',
+    mandos: '{Korvan}',
+    resultado: 'Represión brutal.',
+    consecuencias: 'Empuja a más mundos a la rebelión.' },
+  { id: 'guerra-civil', nombre: 'Guerra civil galáctica', anio: 30, tomo: 'IV', lugar: 'rilur-prime',
+    bandos: 'Kefra y los pueblos sometidos contra Rilur',
+    mandos: 'Kefra · Teosio II',
+    resultado: 'Rilur pierde el control de la galaxia.',
+    consecuencias: 'Dubitsa renace y Vinica se fortalece. Lleva a la tregua de Reus.' },
+  { id: 'caida-dubitsa-prime', nombre: 'Caída de Dubitsa Prime', anio: 53, tomo: 'VI', lugar: 'dubitsa-prime',
+    bandos: 'Andalus contra Dubitsa',
+    mandos: 'Muwiya · Teosio II',
+    resultado: 'Muwiya conquista Dubitsa Prime.',
+    consecuencias: '{Teosio II huye con su corte y sus Pretoni.}' },
+  { id: 'guardia-raqut', nombre: '{Última Guardia de Raqut}', anio: 55, tomo: 'VI', lugar: 'raqut',
+    bandos: 'Rilur contra Andalus',
+    mandos: 'Reus · Muwiya',
+    resultado: 'Reus cae, pero gana tiempo.',
+    consecuencias: 'Ublek toma el mando con el Imperio ya movilizado.' },
+  { id: 'rilit-vakel', nombre: '{Batalla de Rilit}', anio: 55, tomo: 'VI', lugar: 'rilit',
+    bandos: 'Rilur contra Andalus',
+    mandos: 'Ublek · Vakel',
+    resultado: 'Ublek derrota a Vakel.',
+    consecuencias: 'Las forjas del Imperio se salvan y Ublek pasa a la ofensiva.' },
+  { id: 'orion-34-ii', nombre: '{Segunda Batalla de Orion-34}', anio: 56, tomo: 'VI', lugar: 'lolop',
+    bandos: 'Rilur contra Andalus',
+    mandos: 'Ublek · Muwiya',
+    resultado: 'Andalus es repelido y Muwiya muere.',
+    consecuencias: 'Provoca la Expedición de Venganza del Príncipe Rahman.' },
+  { id: 'liberacion-instantinopla', nombre: 'Liberación de Dubitsa Prime', anio: 57, tomo: 'VI', lugar: 'dubitsa-prime',
+    bandos: 'Coalición Definitiva contra Andalus',
+    mandos: 'Teosio II · Ublek · Kefra',
+    resultado: 'Dubitsa Prime liberada.',
+    consecuencias: 'Instantinopla vuelve a manos de Teosio II.' },
+  { id: 'turonis', nombre: '{Batalla de Turonis}', anio: 58, tomo: 'VI', lugar: 'turonis',
+    bandos: 'Coalición Definitiva (Dubitsa, Vinica, Rilur, Kefra) contra la Expedición de Venganza',
+    mandos: 'Ublek · Teosio II · Kefra · Rahman',
+    resultado: 'Batalla apocalíptica. Rahman es derrotado.',
+    consecuencias: 'Andalus se desintegra. Kefra desaparece. Ublek queda gravemente herido.' },
+  { id: 'uxal', nombre: 'Campaña de Uxal', anio: 67, tomo: 'VII', lugar: 'uxal',
+    bandos: 'Arlik contra la rebelión de Uxal {(apoyada por Moffs)}',
+    mandos: 'Arlik · Trok',
+    resultado: 'Victoria decisiva de Arlik pese a la inferioridad numérica.',
+    consecuencias: 'Arlik consolida su legitimidad y empieza la guerra por el dominio total del Imperio.' }
+];
+
+/* ------------------------------------------------------------ CRONOLOGÍA */
+LORE.cronologia = [
+  { anio: 'Siglos AO', texto: 'Rilur es la fuerza dominante de la galaxia. Dubitsa es una civilización ancestral. Vinica es una democracia comercial. Los Caballeros de la Sintonía protegen el equilibrio.', tomo: null, src: 'O' },
+  { anio: '{Siglos AO}', texto: '{Los antepasados de Andalus viven en esta galaxia, con Portus como capital, y se marchan por el Paso del Vacío.}', tomo: null, src: 'P' },
+  { anio: '{c. 30 AO}', texto: 'Rilur enciende el Reactor Oscuro {en Raqut}. La Sintonía empieza a desafinarse.', tomo: 'I', src: 'A' },
+  { anio: 'c. 12 – 1 AO', texto: 'Guerra de las Galaxias Fragmentadas: Rilur avanza imparable con clones y droides. Vinica se alía con los Caballeros y con Dubitsa.', tomo: 'I', src: 'O' },
+  { anio: '0', texto: 'Batalla de Orion-34 en Lolop: Saelen Vharr derrota a Lord Veylan.', tomo: 'I', src: 'O' },
+  { anio: '0 – 1 DO', texto: 'Cae el este, incluida Dubitsa. Vinica firma un tratado humillante {(la Paz de Hierro)}.', tomo: 'I', src: 'O' },
+  { anio: '{c. 8 DO}', texto: '{Muere Saelen Vharr. Kemet hereda la orden.}', tomo: 'II', src: 'P' },
+  { anio: '{18 DO}', texto: 'La facción rebelde destruye Rilit. Aparecen los Nighul. Kemet y el Emperador mueren en duelo. {Korvan toma el trono.}', tomo: 'II', src: 'O' },
+  { anio: '{23 DO}', texto: 'Cinco años después, Raqid encuentra a Kefra en Arcados.', tomo: 'III', src: 'O' },
+  { anio: '{25 DO}', texto: 'Kefra destruye el Reactor Oscuro.', tomo: 'III', src: 'O' },
+  { anio: '{26 DO}', texto: 'Liberación de Vinica Prime y Polus-12.', tomo: 'III', src: 'O' },
+  { anio: '{28 DO}', texto: 'Desastrosa invasión de la galaxia de Andalus. Casi nadie vuelve.', tomo: 'IV', src: 'O' },
+  { anio: '{29 – 33 DO}', texto: 'Contraofensiva brutal y guerra civil galáctica total. Dubitsa renace con Teosio II.', tomo: 'IV', src: 'O' },
+  { anio: '{33 DO}', texto: 'Muere el Emperador {Korvan}. Reus sube al trono, firma la tregua y crea el Parlamento.', tomo: 'V', src: 'O' },
+  { anio: '{33 – 52 DO}', texto: 'Era de reconstrucción y energía limpia.', tomo: 'V', src: 'O' },
+  { anio: '{52 DO}', texto: 'Los Hijos de Andalus invaden, liderados por el General Muwiya.', tomo: 'VI', src: 'O' },
+  { anio: '{53 DO}', texto: 'Muwiya conquista Dubitsa Prime.', tomo: 'VI', src: 'A' },
+  { anio: '{55 DO}', texto: 'Reus cae en sacrificio. Ublek toma el mando y derrota a Vakel.', tomo: 'VI', src: 'O' },
+  { anio: '{56 DO}', texto: 'Ublek repele a Andalus y muere Muwiya.', tomo: 'VI', src: 'A' },
+  { anio: '{57 DO}', texto: 'Llega la Expedición de Venganza del Príncipe Rahman. Se forma la Coalición Definitiva, que libera Dubitsa Prime.', tomo: 'VI', src: 'O' },
+  { anio: '{58 DO}', texto: 'Batalla apocalíptica {de Turonis}: Rahman es derrotado. Kefra desaparece.', tomo: 'VI', src: 'O' },
+  { anio: '{c. 59 DO}', texto: '{Los principados del este se unifican.}', tomo: 'VI', src: 'P' },
+  { anio: '{c. 62 DO}', texto: '{Muere Teosio II y le sucede Teosio III.}', tomo: 'VI', src: 'P' },
+  { anio: '{64 DO}', texto: 'Muere Ublek y deja el trono vacío.', tomo: 'VI', src: 'O' },
+  { anio: '{64 – 67 DO}', texto: 'Interregno: Moffs y almirantes compiten por el trono y las regiones lejanas se declaran autónomas.', tomo: 'VII', src: 'O' },
+  { anio: '{67 DO}', texto: 'Arlik vuelve del exilio con Trok y vence en Uxal.', tomo: 'VII', src: 'O' },
+  { anio: '{68 DO} · Presente', texto: 'Frágil equilibrio de poder. Arlik purga a sus comandantes y Dubitsa asciende.', tomo: 'VII', src: 'O' }
+];
+
+/* ------------------------------------------------------------ GLOSARIO */
+LORE.glosario = [
+  { t: 'Sintonía Universal', d: 'La energía que conecta todas las cosas. Los Caballeros buscan el equilibrio en ella.', src: 'O' },
+  { t: 'Caballeros de la Sintonía', d: 'Orden ancestral de monjes guerreros, hoy casi extinta. También se les llama Caballeros Ocultos. Su sintonía se basa en la sintonía del universo.', src: 'O' },
+  { t: 'Reactor Oscuro', d: 'Creación de Rilur que le daba energía y recursos casi ilimitados a un coste casi nulo. Permitía ejércitos masivos casi gratuitos. Su energía alterada desafinaba la Sintonía del universo y potenciaba a los Nighul. Kefra lo destruyó.', src: 'A' },
+  { t: 'Nighul', d: 'La élite de la élite de Rilur. Cada uno equivale a cien Nizarios. Se seleccionan genéticamente entre guerreros y clones, con un entrenamiento inhumano y años de veteranía. También son científicos, filósofos e ingenieros. En el Tomo II aparecen escritos como «Nizghul», una errata.', src: 'A' },
+  { t: 'Nizarios', d: 'La élite del ejército de Rilur. Junto a los Nighul, el orgullo del Imperio. En algunas notas aparecen como «Nizaríes».', src: 'O' },
+  { t: 'Pretoni', d: 'Guerreros de élite de Dubitsa, numerosos, leales y temidos en toda la galaxia.', src: 'O' },
+  { t: 'Clones y droides', d: 'La base de los ejércitos masivos de Rilur.', src: 'O' },
+  { t: 'Moffs', d: 'Grandes mandos regionales de Rilur. {Son gobernadores con flotas propias.} Se disputaron el trono en el interregno.', src: 'O' },
+  { t: 'Parlamento de Rilur', d: 'Creado por Reus. Dio a Arlik un respaldo débil.', src: 'O' },
+  { t: 'Senado de Vinica', d: 'Órgano de gobierno de la República. Cree que la fortaleza económica es la mejor defensa.', src: 'O' },
+  { t: 'Hijos de Andalus', d: 'El pueblo de Andalus, originario de otra galaxia.', src: 'O' },
+  { t: 'Gaziato de Andalus', d: 'La potencia teocrático-militar de Andalus. {Muwiya lo proclamó en Portus como su dominio en esta galaxia.}', src: 'O' },
+  { t: 'Expedición de Venganza', d: 'Campaña del Príncipe Rahman para vengar la muerte de Muwiya. Termina con su derrota ante la Coalición Definitiva.', src: 'A' },
+  { t: 'Coalición Definitiva', d: 'Alianza de Dubitsa, Vinica y Rilur (con Kefra) contra Rahman.', src: 'O' },
+  { t: 'Guardián del Bosque', d: 'Título profetizado por Kemet y que llevó Kefra.', src: 'O' },
+  { t: 'Otro plano', d: 'Donde se entrenó Kefra. {Los Caballeros lo llaman Plano de la Resonancia: un reflejo de la realidad hecho de Sintonía pura, donde el tiempo corre distinto.}', src: 'O' },
+  { t: '{Paso del Vacío}', d: '{Corredor intergaláctico entre esta galaxia y la de Andalus, junto a Portus.}', src: 'P' },
+  { t: '{Paz de Hierro}', d: '{Nombre del tratado humillante que firmó Vinica en el Tomo I.}', src: 'P' },
+  { t: '{Tregua de Instantinopla}', d: '{Nombre de la tregua de Reus con Dubitsa y Vinica.}', src: 'P' },
+  { t: 'Última Gran Guerra', d: 'La guerra contra Andalus del Tomo VI.', src: 'O' },
+  { t: 'Era de las Grandes Guerras y sus Ecos', d: 'El periodo que narra el Holocrón.', src: 'O' },
+  { t: '{DO / AO}', d: '{Calendario de trabajo: años Después y Antes de Orion. El año 0 es la Batalla de Orion-34.}', src: 'P' }
+];
+
+/* ------------------------------------------------------------ REGISTRO DE CANON */
+LORE.canon = {
+  fuentes: [
+    { nombre: 'Web original (7 Tomos)', url: 'https://crepi-alkam.neocities.org/', nota: 'Texto literal recuperado el 2 oct 2026.' },
+    { nombre: 'Versión anterior (6 Tomos)', url: 'https://crepi-alkam.neocities.org/FICCION-GALACTICA.html', nota: 'Rilur «Fragmentado»: los Moffs y almirantes antes de Arlik.' },
+    { nombre: 'Notas de reconstrucción', url: '', nota: 'lore_rilur_dubitsa_reconstruccion.md y lore_rilur_eventos_batallas_protagonistas.md (memoria de conversaciones; menor fiabilidad).' }
+  ],
+  decisiones: [
+    { p: '¿Quién es el Emperador de los Tomos III–V?', r: 'Un sucesor distinto del Primer Emperador (que muere con Kemet). Es el padre de Reus.' },
+    { p: 'Nizghul, Nighul y Nizarios', r: '«Nizghul» es una errata de Nighul. Los Nizarios son otro cuerpo.' },
+    { p: 'Caballeros Oscultos', r: 'Es otro nombre de los Caballeros de la Sintonía (Caballeros Ocultos). Su sintonía se basa en la del universo.' },
+    { p: 'Destino de Kefra', r: 'Lucha contra Rahman y desaparece.' },
+    { p: 'Lord Veylan', r: 'Señor de la guerra de Rilur, sin poderes de la Sintonía.' },
+    { p: 'Vakel', r: 'General de Andalus, derrotado por Ublek.' },
+    { p: 'Dubitsa Prime', r: 'Muwiya la conquistó y después fue liberada.' },
+    { p: 'Nombres de los emperadores', r: 'Claude propone nombres (Sarkon y Korvan), pendientes de aprobar.' },
+    { p: 'Lugares de las notas', r: 'Se mantienen Polus-12, Instantinopla, Lolop, Raqut y Rilit con los papeles propuestos.' },
+    { p: 'Reactor Oscuro', r: 'Energía y recursos casi ilimitados a coste casi nulo: ejércitos masivos casi gratis y expansión. Su energía alterada desafinaba la Sintonía del universo. Por eso la orden se unió a Vinica y Dubitsa en Lolop.' },
+    { p: 'Nighul después del reactor', r: 'Guerreros y clones de selección genética, entrenamiento inhumano y años de veteranía. El reactor potenciaba sus poderes arcanos. Después siguieron siendo una élite temida y además científicos, filósofos e ingenieros. Junto a los Nizarios, el orgullo de Rilur.' },
+    { p: 'Batalla contra Rahman', r: 'En otro planeta estratégico, donde chocan el avance de Andalus y la Coalición. Claude propone Turonis.' },
+    { p: 'Motivo de la Expedición de Venganza', r: 'La muerte de Muwiya. La expedición de Rilur a Andalus fue una masacre de la que casi nadie volvió.' },
+    { p: 'Teosio II', r: 'Restauró Dubitsa, luchó en la Coalición y es padre de Teosio III.' },
+    { p: 'Alid', r: 'Probablemente un hijo del Emperador de Andalus que llevó una campaña de venganza. En segundo plano.' },
+    { p: 'Formato', r: 'Crónica narrada con fichas.' }
+  ],
+  propuestas: [
+    'Nombres de los emperadores: Sarkon (el Primer Emperador) y Korvan (Gran Mariscal y sucesor).',
+    'Calendario DO/AO, con el año 0 en la Batalla de Orion-34, y todas las fechas concretas.',
+    'Turonis como lugar de la batalla final contra Rahman, y la muerte de Rahman en ella.',
+    'El Paso del Vacío como corredor hacia la galaxia de Andalus, junto a Portus.',
+    'Los antepasados de Andalus vivieron en esta galaxia con capital en Portus.',
+    'Muwiya proclama el Gaziato en Portus. Muere en la Segunda Batalla de Orion-34.',
+    'Reus cae en la Última Guardia de Raqut. Ublek vence a Vakel en Rilit.',
+    'Paz de Hierro (tratado de Vinica) y Tregua de Instantinopla (tregua de Reus).',
+    'Linaje de maestros: Saelen Vharr → Kemet → Raqid → Kefra.',
+    'El Plano de la Resonancia como nombre del «otro plano».',
+    'La madre de Arlik era una ingeniera Nighul. Trok es un veterano de la época del reactor.',
+    'El Primer Emperador estaba unido al reactor, lo que explica que pudiera enfrentarse a Kemet.',
+    'Korvan invade Andalus para sustituir los recursos del reactor.',
+    'La unificación de los Principados se produce después de Turonis (c. 59 DO).',
+    'Lemas de las facciones y títulos honoríficos (el Implacable, el Reformador, el Defensor).'
+  ],
+  pendientes: [
+    '¿Cuál es el verdadero nombre del Emperador de Andalus? ¿Cómo se llama su galaxia?',
+    '¿Qué campaña libró el Príncipe Alid y cuándo?',
+    '¿Vakel murió o fue capturado?',
+    '¿Qué fue de Raqid después de Raqut?',
+    '¿Quién gobierna Vinica (cancilleres) y quiénes son los príncipes de la Unión del Este?',
+    '¿Cómo se llama la ciudad capital de Rilur Prime?',
+    '¿Qué era exactamente la «legión secreta» de Arlik?',
+    '¿Quién es la madre de Arlik?',
+    '¿Hay más Tomos después del VII?',
+    'Raqut y Rilit: ¿el autor los recordaba con otros papeles?',
+    'Instantinopla: confirmar su ortografía.'
+  ]
+};
+
+</script>
+<script>/* exportar.js */
+/*
+  Exportador de la Biblia del canon.
+  Funciona en el navegador (botones de la página Canon) y en Node (herramientas/construir.js).
+  {llaves} se convierten en «texto†» en Markdown: † = propuesta pendiente de aprobación.
+*/
+(function () {
+  const L = window.LORE;
+  const SRC = { O: 'Original (web 2025)', A: 'Autor (2026)', P: 'Propuesta' };
+  const m = s => String(s == null ? '' : s).replace(/\{([^{}]+)\}/g, '$1†');
+  const facName = id => (L.facciones.find(f => f.id === id) || { nombre: id }).nombre;
+  const perName = id => m((L.personajes.find(p => p.id === id) || { nombre: id }).nombre);
+  const batName = id => m((L.batallas.find(b => b.id === id) || { nombre: id }).nombre);
+  const lugName = id => m((L.lugares.find(l => l.id === id) || { nombre: id }).nombre);
+
+  L.aMarkdown = function (fecha) {
+    const o = [];
+    const P = (...x) => o.push(...x);
+    P('# Holocrón Galáctico — Biblia del Canon', '');
+    P('> Crónica de la Era de las Grandes Guerras y sus Ecos.');
+    P('> Generada' + (fecha ? ' el ' + fecha : '') + ' a partir de `web/datos/*.js`. **No edites este archivo a mano:** edita los datos y vuelve a generarla.');
+    P('>');
+    P('> **Leyenda:** las marcas de fuente son *Original* (texto literal de la web de 2025), *Autor 2026* (decisiones del autor al reconstruir) y *Propuesta* (reconstrucción pendiente de aprobar). Dentro del texto, **†** marca los detalles propuestos.', '');
+
+    P('## Índice', '');
+    P('1. Estado actual de la galaxia', '2. Los Tomos (I–VII)', '3. Códice de Facciones', '4. Personajes', '5. Batallas y acontecimientos', '6. Lugares', '7. Cronología', '8. Glosario', '9. Registro de canon', '');
+
+    P('---', '', '## 1. Estado actual de la galaxia', '');
+    P(m(L.epilogo.texto), '');
+    P('| Facción | Estado | Peso | Situación |', '|---|---|---|---|');
+    L.facciones.filter(f => f.poder != null).forEach(f => {
+      P(`| ${f.id === 'andalus' ? 'Restos de Andalus' : f.nombre} | ${f.estado} | ${f.poder} | ${m(f.resumenActual)} |`);
+    });
+    P('');
+
+    P('---', '', '## 2. Los Tomos', '');
+    L.tomos.forEach(t => {
+      P(`### Tomo ${t.num} — ${t.titulo}`, '');
+      P(`*Periodo: ${m(t.periodo)}*`, '');
+      P('**Registro original del Holocrón:**', '', '> ' + t.original, '');
+      if (t.notaOriginal) P('*Nota: ' + t.notaOriginal + '*', '');
+      P('**Sinopsis.** ' + m(t.sinopsis), '');
+      t.capitulos.forEach((c, i) => {
+        P(`#### Capítulo ${i + 1}. ${c.titulo}`, '');
+        P('*Fuentes: ' + c.base.split(/\s+/).map(k => SRC[k]).join(', ') + '*', '');
+        c.texto.trim().split(/\n\s*\n/).forEach(p => P(m(p.trim()), ''));
+      });
+      const f = t.ficha;
+      P('#### Ficha del Tomo', '');
+      P('- **Facciones:** ' + f.facciones.map(facName).join(', '));
+      P('- **Personajes:** ' + f.personajes.map(perName).join(', '));
+      if (f.batallas.length) P('- **Batallas y acontecimientos:** ' + f.batallas.map(batName).join(', '));
+      P('- **Cambios territoriales:** ' + m(f.territorio));
+      P('- **Muertes:** ' + m(f.muertes));
+      P('- **Nuevos líderes:** ' + m(f.lideres));
+      P('- **Tecnología:** ' + m(f.tecnologia));
+      P('- **Consecuencias:** ' + m(f.consecuencias), '');
+      P('#### Para videojuegos', '');
+      t.juegos.forEach(j => P('- ' + m(j)));
+      P('');
+    });
+    P('### Epílogo — ' + L.epilogo.titulo, '', m(L.epilogo.texto), '');
+
+    P('---', '', '## 3. Códice de Facciones', '');
+    L.facciones.forEach(f => {
+      P(`### ${f.nombre}`, '');
+      if (f.alias) P('*' + m(f.alias) + '*', '');
+      P(`- **Estado actual:** ${f.estado}${f.poder != null ? ' (peso ' + f.poder + ')' : ''}`);
+      P('- **Lema:** ' + m(f.lema));
+      P('- **Capital / sede:** ' + m(f.capital));
+      P('- **Gobierno:** ' + m(f.gobierno), '');
+      P('**Códice original:**', '', '> ' + f.codice, '');
+      P('**Historia**', '');
+      f.historia.forEach(h => P(`- **${m(h.titulo)}.** ${m(h.texto)}`));
+      P('', '**Gobernantes y líderes**', '');
+      P('| Nombre | Título | Periodo | Nota |', '|---|---|---|---|');
+      f.gobernantes.forEach(g => P(`| ${m(g.nombre)} | ${m(g.titulo)} | ${m(g.periodo)} | ${m(g.nota)} |`));
+      P('', '**Ejército**', '');
+      f.ejercito.forEach(e => P(`- **${m(e.nombre)}:** ${m(e.texto)}`));
+      P('', '**Cultura.** ' + m(f.cultura), '');
+      P('**Relaciones**', '');
+      f.relaciones.forEach(r => P(`- **${facName(r.con)}** (${r.tipo}): ${m(r.texto)}`));
+      P('', '**Situación actual.** ' + m(f.resumenActual), '');
+      P('**Jugabilidad.** ' + m(f.jugabilidad), '');
+      P('**Ganchos narrativos:**', '');
+      f.ganchos.forEach(g => P('- ' + m(g)));
+      P('');
+    });
+
+    P('---', '', '## 4. Personajes', '');
+    L.personajes.forEach(p => {
+      P(`### ${m(p.nombre)}`, '');
+      P(`- **Títulos:** ${m(p.titulos)}`);
+      P(`- **Facción:** ${facName(p.faccion)}`);
+      P(`- **Vida:** ${m(p.vida)}`);
+      P(`- **Papel:** ${m(p.rol)}`);
+      P(`- **Tomos:** ${p.tomos.join(', ')}`, '');
+      P(m(p.bio), '');
+      P('**Destino:** ' + m(p.destino), '');
+    });
+
+    P('---', '', '## 5. Batallas y acontecimientos', '');
+    L.batallas.slice().sort((a, b) => a.anio - b.anio).forEach(b => {
+      P(`### ${m(b.nombre)} — año ${b.anio} DO† · Tomo ${b.tomo}`, '');
+      P(`- **Lugar:** ${lugName(b.lugar)}`);
+      P(`- **Bandos:** ${m(b.bandos)}`);
+      P(`- **Mandos:** ${m(b.mandos)}`);
+      P(`- **Resultado:** ${m(b.resultado)}`);
+      P(`- **Consecuencias:** ${m(b.consecuencias)}`, '');
+    });
+
+    P('---', '', '## 6. Lugares', '');
+    P('| Lugar | Tipo | Afiliación | Fuente | Descripción |', '|---|---|---|---|---|');
+    L.lugares.forEach(l => P(`| ${m(l.nombre)} | ${m(l.tipo)} | ${m(l.afiliacion)} | ${SRC[l.src]} | ${m(l.texto)} |`));
+    P('');
+
+    P('---', '', '## 7. Cronología', '', '*Calendario de trabajo†: año 0 = Batalla de Orion-34; AO = antes, DO = después.*', '');
+    L.cronologia.forEach(c => P(`- **${m(c.anio)}** — ${m(c.texto)}${c.tomo ? ' *(Tomo ' + c.tomo + ')*' : ''}`));
+    P('');
+
+    P('---', '', '## 8. Glosario', '');
+    L.glosario.slice().sort((a, b) => m(a.t).localeCompare(m(b.t), 'es')).forEach(g => P(`- **${m(g.t)}** — ${m(g.d)}`));
+    P('');
+
+    P('---', '', '## 9. Registro de canon', '');
+    P('### Fuentes', '');
+    L.canon.fuentes.forEach(f => P(`- **${f.nombre}**${f.url ? ' — ' + f.url : ''}. ${f.nota}`));
+    P('', '### Decisiones del autor (2 oct 2026)', '');
+    L.canon.decisiones.forEach(d => P(`- **${d.p}** → ${d.r}`));
+    P('', '### Propuestas pendientes de aprobar', '');
+    L.canon.propuestas.forEach(x => P('- [ ] ' + x));
+    P('', '### Preguntas abiertas', '');
+    L.canon.pendientes.forEach(x => P('- [ ] ' + x));
+    P('');
+    return o.join('\n');
+  };
+
+  L.aJSON = function () {
+    const datos = {};
+    ['epilogo', 'tomos', 'facciones', 'personajes', 'batallas', 'lugares', 'cronologia', 'glosario', 'canon'].forEach(k => { datos[k] = L[k]; });
+    return JSON.stringify({
+      convenciones: {
+        llaves: 'El texto entre {llaves} es una propuesta pendiente de aprobación.',
+        src: { O: SRC.O, A: SRC.A, P: SRC.P },
+        calendario: 'Año 0 = Batalla de Orion-34 (propuesta). AO = antes, DO = después.'
+      },
+      ...datos
+    }, null, 2);
+  };
+})();
+
+</script>
+<script>/* app.js */
+/* Holocrón Galáctico — lector de la Biblia del canon */
+(function () {
+  const L = window.LORE;
+  const app = document.getElementById('app');
+
+  /* ---------------------------------------------------- utilidades */
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const fmt = s => esc(s).replace(/\{([^{}]+)\}/g, '<span class="prop" title="Propuesta: pendiente de aprobación">$1</span>');
+  const plain = s => String(s == null ? '' : s).replace(/[{}]/g, '');
+  const paras = s => String(s).trim().split(/\n\s*\n/).map(p => `<p>${fmt(p.trim())}</p>`).join('');
+  const fac = id => L.facciones.find(f => f.id === id);
+  const per = id => L.personajes.find(p => p.id === id);
+  const bat = id => L.batallas.find(b => b.id === id);
+  const lug = id => L.lugares.find(l => l.id === id);
+  const tomoNum = n => L.tomos.find(t => t.num === n);
+  const facColor = id => (fac(id) || {}).color || '#a855f7';
+  const SRC = {
+    O: { cls: 'b-o', label: 'Original', tip: 'Texto literal de la web original (2025)' },
+    A: { cls: 'b-a', label: 'Autor 2026', tip: 'Decisión del autor al reconstruir el canon (2 oct 2026)' },
+    P: { cls: 'b-p', label: 'Propuesta', tip: 'Reconstrucción propuesta, pendiente de aprobación' }
+  };
+  const badge = k => `<span class="badge ${SRC[k].cls}" title="${SRC[k].tip}">${SRC[k].label}</span>`;
+  const statusName = f => f.id === 'andalus' ? 'Restos de Andalus' : f.nombre;
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* sin almacenamiento */ } }
+  };
+  const facChip = id => {
+    const f = fac(id);
+    return f ? `<a class="chip" href="#faccion-${f.id}" style="--fc:${f.color}"><i class="dot"></i>${esc(f.nombre)}</a>` : '';
+  };
+  const perLink = id => { const p = per(id); return p ? `<a href="#personaje-${p.id}">${fmt(p.nombre)}</a>` : esc(id); };
+  const batLink = id => { const b = bat(id); return b ? `<a href="#batalla-${b.id}">${fmt(b.nombre)}</a>` : esc(id); };
+  const lugLink = id => { const l = lug(id); return l ? `<a href="#lugar-${l.id}">${fmt(l.nombre)}</a>` : esc(id); };
+  const tomoLink = n => { const t = tomoNum(n); return t ? `<a href="#${t.id}">Tomo ${n}</a>` : ''; };
+
+  /* ---------------------------------------------------- portada */
+  function viewHome() {
+    const status = L.facciones.filter(f => f.poder != null);
+    const total = status.reduce((a, f) => a + f.poder, 0);
+    const maxSpan = Math.max(...L.tomos.map(t => t.anios[1] - t.anios[0]));
+    return `
+      <section class="hero">
+        <canvas class="stars" aria-hidden="true"></canvas>
+        <div class="wrap hero-in">
+          <p class="eyebrow">Crónica interactiva · Era de las Grandes Guerras y sus Ecos</p>
+          <h1 class="hero-title">Holocrón<br><span>Galáctico</span></h1>
+          <p class="lede">${fmt(L.epilogo.texto)}</p>
+          <p class="hero-meta">Presente del Holocrón: <b>${fmt('{año ' + L.epilogo.presente + '}')}</b> · ${L.tomos.length} Tomos · ${L.facciones.length} facciones · ${L.personajes.length} personajes</p>
+          <div class="cta">
+            <a class="btn" href="#tomo-1">Empezar por el Tomo I</a>
+            <a class="btn ghost" href="#mapa">Abrir el mapa galáctico</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="wrap block">
+        <header class="sec-head">
+          <p class="eyebrow">Presente</p>
+          <h2>Estado actual de la galaxia</h2>
+          <p>Las potencias tras la Última Gran Guerra y el peso relativo que les daba el gráfico de la web original.</p>
+        </header>
+        <div class="power" role="img" aria-label="Balance de poder: ${status.map(f => statusName(f) + ' ' + f.poder + '%').join(', ')}">
+          <div class="power-bar">${status.map(f => `<span style="--fc:${f.color};width:${(f.poder / total) * 100}%"></span>`).join('')}</div>
+          <div class="power-legend">${status.map(f => `<span><i class="dot" style="--fc:${f.color}"></i>${esc(statusName(f))} · ${f.poder}%</span>`).join('')}</div>
+        </div>
+        <div class="status-grid">
+          ${status.map(f => `
+            <a class="status" href="#faccion-${f.id}" style="--fc:${f.color}">
+              <h3>${esc(statusName(f))} <span class="pill">${esc(f.estado)}</span></h3>
+              <p>${fmt(f.resumenActual)}</p>
+            </a>`).join('')}
+        </div>
+      </section>
+
+      <section class="wrap block" id="biblioteca">
+        <header class="sec-head">
+          <p class="eyebrow">La Biblioteca</p>
+          <h2>Los siete Tomos</h2>
+          <p>La Línea Temporal de las Grandes Guerras, narrada capítulo a capítulo. Cada lomo muestra en su borde los colores de las facciones que participan.</p>
+        </header>
+        <div class="shelf">
+          ${L.tomos.map(t => {
+            const span = t.anios[1] - t.anios[0];
+            const h = 270 + Math.round((span / maxSpan) * 90);
+            return `
+            <a class="spine" href="#${t.id}" style="--h:${h}px" aria-label="Tomo ${t.num}: ${esc(t.titulo)}">
+              <span class="spine-bands">${t.ficha.facciones.map(id => `<i style="--fc:${facColor(id)}"></i>`).join('')}</span>
+              <span class="spine-num">${t.num}</span>
+              <span class="spine-title">${esc(t.titulo)}</span>
+              <span class="spine-years">${esc(t.periodo)}</span>
+            </a>`;
+          }).join('')}
+        </div>
+      </section>
+
+      <section class="wrap block">
+        <header class="sec-head">
+          <p class="eyebrow">Cómo leer este archivo</p>
+          <h2>Tres niveles de canon</h2>
+          <p>Todo dato indica su origen, para que recuerdos, decisiones e invenciones no se mezclen por accidente.</p>
+        </header>
+        <div class="legend-grid">
+          <div class="legend-item">${badge('O')}<p>Texto literal de tu web Holocrón Galáctico (2025), recuperado del código fuente. Es el canon firme.</p></div>
+          <div class="legend-item">${badge('A')}<p>Decisiones que tomaste al reconstruir el lore el 2 de octubre de 2026.</p></div>
+          <div class="legend-item">${badge('P')}<p>Detalles propuestos para rellenar huecos. En el texto aparecen <span class="prop" title="Propuesta: pendiente de aprobación">subrayados con puntos</span>. Puedes ocultar el subrayado con el botón «Propuestas».</p></div>
+        </div>
+      </section>`;
+  }
+
+  /* ---------------------------------------------------- tomo */
+  function viewTomo(t) {
+    const i = L.tomos.indexOf(t);
+    const prev = L.tomos[i - 1], next = L.tomos[i + 1];
+    const f = t.ficha;
+    return `
+      <div class="wrap page">
+        <nav class="crumbs"><a href="#inicio">Biblioteca</a> / Tomo ${t.num}</nav>
+        <header class="tomo-head">
+          <div class="tomo-num" aria-hidden="true">${t.num}</div>
+          <div>
+            <p class="eyebrow">Tomo ${t.num} · ${fmt(t.periodo)}</p>
+            <h1>${esc(t.titulo)}</h1>
+            <div class="chips">${f.facciones.map(facChip).join('')}</div>
+          </div>
+        </header>
+        <div class="reader-grid">
+          <aside class="toc">
+            <p class="label">En este tomo</p>
+            <ol>
+              ${t.capitulos.map((c, n) => `<li><a href="#${t.id}.c${n + 1}"><span>${n + 1}</span>${esc(c.titulo)}</a></li>`).join('')}
+              <li><a href="#${t.id}.ficha"><span>◇</span>Ficha del Tomo</a></li>
+              <li><a href="#${t.id}.juegos"><span>◇</span>Para videojuegos</a></li>
+            </ol>
+            <div class="toc-pager">
+              ${prev ? `<a href="#${prev.id}">← Tomo ${prev.num}</a>` : ''}
+              ${next ? `<a href="#${next.id}">Tomo ${next.num} →</a>` : `<a href="#inicio">Volver a la Biblioteca</a>`}
+            </div>
+          </aside>
+          <article class="prose">
+            <figure class="record">
+              <figcaption><span class="label">Registro original del Holocrón</span>${badge('O')}</figcaption>
+              <blockquote>${esc(t.original)}</blockquote>
+              ${t.notaOriginal ? `<p class="note">Nota: ${esc(t.notaOriginal)}</p>` : ''}
+            </figure>
+            <p class="synopsis">${fmt(t.sinopsis)}</p>
+
+            ${t.capitulos.map((c, n) => `
+              <section class="chapter" id="${t.id}.c${n + 1}">
+                <header>
+                  <p class="label">Capítulo ${n + 1}</p>
+                  <h2>${esc(c.titulo)}</h2>
+                  <div class="ch-src"><span class="label">Fuentes</span><span class="badges">${c.base.split(/\s+/).map(badge).join('')}</span></div>
+                </header>
+                ${paras(c.texto)}
+              </section>`).join('')}
+
+            <hr class="divider">
+            <section class="sheet" id="${t.id}.ficha">
+              <p class="eyebrow">Datos</p>
+              <h2>Ficha del Tomo ${t.num}</h2>
+              <dl class="facts">
+                <dt>Periodo</dt><dd>${fmt(t.periodo)}</dd>
+                <dt>Facciones</dt><dd><div class="chips">${f.facciones.map(facChip).join('')}</div></dd>
+                <dt>Personajes</dt><dd>${f.personajes.map(perLink).join(' · ')}</dd>
+                ${f.batallas.length ? `<dt>Batallas</dt><dd>${f.batallas.map(batLink).join(' · ')}</dd>` : ''}
+                <dt>Lugares</dt><dd>${t.lugares.map(lugLink).join(' · ')}</dd>
+                <dt>Territorio</dt><dd>${fmt(f.territorio)}</dd>
+                <dt>Muertes</dt><dd>${fmt(f.muertes)}</dd>
+                <dt>Nuevos líderes</dt><dd>${fmt(f.lideres)}</dd>
+                <dt>Tecnología</dt><dd>${fmt(f.tecnologia)}</dd>
+                <dt>Consecuencias</dt><dd>${fmt(f.consecuencias)}</dd>
+              </dl>
+            </section>
+            <section class="sheet" id="${t.id}.juegos">
+              <p class="eyebrow">Semillas</p>
+              <h2>Para videojuegos</h2>
+              <ul class="hooks">${t.juegos.map(j => `<li>${fmt(j)}</li>`).join('')}</ul>
+            </section>
+            <nav class="pager">
+              ${prev ? `<a href="#${prev.id}"><span class="label">← Anterior</span><strong>Tomo ${prev.num}. ${esc(prev.titulo)}</strong></a>` : ''}
+              ${next ? `<a class="next" href="#${next.id}"><span class="label">Siguiente →</span><strong>Tomo ${next.num}. ${esc(next.titulo)}</strong></a>`
+                     : `<a class="next" href="#inicio"><span class="label">Fin de la crónica</span><strong>${esc(L.epilogo.titulo)}</strong></a>`}
+            </nav>
+          </article>
+        </div>
+      </div>`;
+  }
+
+  /* ---------------------------------------------------- facciones */
+  function viewFacciones() {
+    return `
+      <div class="wrap page">
+        <header class="sec-head">
+          <p class="eyebrow">Códice de Facciones</p>
+          <h1 class="hero-title" style="font-size:var(--step-3)">Las civilizaciones</h1>
+          <p>Cada facción tiene su historia, su cultura y sus ambiciones. El texto del códice original abre cada ficha, y después vienen la historia completa, los gobernantes, el ejército y las notas de jugabilidad.</p>
+        </header>
+        <div class="fac-grid">
+          ${L.facciones.map(f => `
+            <a class="fac-card" href="#faccion-${f.id}" style="--fc:${f.color}">
+              <span class="pill" style="justify-self:start">${esc(f.estado)}</span>
+              <h3>${esc(f.nombre)}</h3>
+              <p class="lema">${fmt(f.lema)}</p>
+              <p>${fmt(f.codice.split('. ').slice(0, 2).join('. '))}.</p>
+            </a>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  function viewFaccion(f) {
+    const people = L.personajes.filter(p => p.faccion === f.id);
+    const others = L.facciones.filter(x => x.id !== f.id);
+    return `
+      <div class="wrap page" style="--fc:${f.color}">
+        <nav class="crumbs"><a href="#facciones">Códice de Facciones</a> / ${esc(f.nombre)}</nav>
+        <header class="fac-head">
+          <p class="eyebrow">Códice de Facciones</p>
+          <h1>${esc(f.nombre)}</h1>
+          ${f.alias ? `<p class="muted">${esc(f.alias)}</p>` : ''}
+          <div class="chips">
+            <span class="pill">${esc(f.estado)}</span>
+            ${['historia', 'gobernantes', 'ejercito', 'cultura', 'relaciones', 'presente', 'juego'].map(s =>
+              `<a class="chip" href="#faccion-${f.id}.${s}">${{ historia: 'Historia', gobernantes: 'Gobernantes', ejercito: 'Ejército', cultura: 'Cultura', relaciones: 'Relaciones', presente: 'Presente', juego: 'Jugabilidad' }[s]}</a>`).join('')}
+          </div>
+        </header>
+        <div class="fac-layout">
+          <div class="fac-main">
+            <figure class="record" style="margin:0">
+              <figcaption><span class="label">Códice original</span>${badge('O')}</figcaption>
+              <blockquote>${esc(f.codice)}</blockquote>
+            </figure>
+
+            <section class="fac-sec" id="faccion-${f.id}.historia">
+              <h2>Historia</h2>
+              <ol class="era-list">${f.historia.map(h => `<li><div><h3>${fmt(h.titulo)}</h3><p>${fmt(h.texto)}</p></div></li>`).join('')}</ol>
+            </section>
+
+            <section class="fac-sec" id="faccion-${f.id}.gobernantes">
+              <h2>Gobernantes y líderes</h2>
+              <div class="table-wrap"><table>
+                <thead><tr><th>Nombre</th><th>Título</th><th>Periodo</th><th>Nota</th></tr></thead>
+                <tbody>${f.gobernantes.map(g => `<tr><td><strong>${fmt(g.nombre)}</strong></td><td>${fmt(g.titulo)}</td><td class="num">${fmt(g.periodo)}</td><td>${fmt(g.nota)}</td></tr>`).join('')}</tbody>
+              </table></div>
+            </section>
+
+            <section class="fac-sec" id="faccion-${f.id}.ejercito">
+              <h2>${f.id === 'sintonia' ? 'Caballeros y poderes' : 'Ejército'}</h2>
+              <div class="unit-list">${f.ejercito.map(e => `<div class="unit"><h3>${fmt(e.nombre)}</h3><p>${fmt(e.texto)}</p></div>`).join('')}</div>
+            </section>
+
+            <section class="fac-sec" id="faccion-${f.id}.cultura">
+              <h2>Cultura</h2>
+              <p>${fmt(f.cultura)}</p>
+            </section>
+
+            <section class="fac-sec" id="faccion-${f.id}.relaciones">
+              <h2>Relaciones</h2>
+              <div>${f.relaciones.map(r => { const o = fac(r.con); return `
+                <div class="rel">
+                  <a href="#faccion-${o.id}" style="--fc:${o.color}"><i class="dot"></i>${esc(o.nombre)}</a>
+                  <span class="pill" style="justify-self:start">${esc(r.tipo)}</span>
+                  <p>${fmt(r.texto)}</p>
+                </div>`; }).join('')}</div>
+            </section>
+
+            <section class="fac-sec" id="faccion-${f.id}.presente">
+              <h2>Situación actual</h2>
+              <p>${fmt(f.resumenActual)}</p>
+            </section>
+
+            <section class="fac-sec" id="faccion-${f.id}.juego">
+              <h2>Para videojuegos</h2>
+              <div class="play">
+                <p class="label">Estilo de juego</p>
+                <p>${fmt(f.jugabilidad)}</p>
+              </div>
+              <p class="label">Ganchos narrativos</p>
+              <ul class="hooks">${f.ganchos.map(g => `<li>${fmt(g)}</li>`).join('')}</ul>
+            </section>
+          </div>
+
+          <aside class="fac-side">
+            <dl>
+              <div><dt>Estado</dt><dd>${esc(f.estado)}${f.poder != null ? ` · peso ${f.poder}%` : ''}</dd></div>
+              <div><dt>Lema</dt><dd>${fmt(f.lema)}</dd></div>
+              <div><dt>Capital / sede</dt><dd>${fmt(f.capital)}</dd></div>
+              <div><dt>Gobierno</dt><dd>${fmt(f.gobierno)}</dd></div>
+              ${people.length ? `<div><dt>Personajes</dt><dd>${people.map(p => perLink(p.id)).join(' · ')}</dd></div>` : ''}
+            </dl>
+            <div><p class="label" style="margin-bottom:8px">Otras facciones</p><div class="chips">${others.map(o => facChip(o.id)).join('')}</div></div>
+          </aside>
+        </div>
+      </div>`;
+  }
+
+  /* ---------------------------------------------------- personajes */
+  function viewPersonajes() {
+    return `
+      <div class="wrap page">
+        <header class="sec-head">
+          <p class="eyebrow">Fichas</p>
+          <h1 class="hero-title" style="font-size:var(--step-3)">Personajes</h1>
+          <p>Héroes, emperadores y enemigos de las Grandes Guerras. Pulsa una ficha para leer la biografía completa.</p>
+        </header>
+        <div class="toolbar" role="group" aria-label="Filtrar por facción">
+          <button class="chip" data-f="" aria-pressed="true">Todas</button>
+          ${L.facciones.map(f => `<button class="chip" data-f="${f.id}" aria-pressed="false" style="--fc:${f.color}"><i class="dot"></i>${esc(f.nombre)}</button>`).join('')}
+        </div>
+        <div class="people">
+          ${L.personajes.map(p => { const f = fac(p.faccion); return `
+            <details class="person" id="personaje-${p.id}" data-f="${p.faccion}" style="--fc:${f.color}">
+              <summary>
+                <h3>${fmt(p.nombre)}</h3>
+                <p>${fmt(p.titulos)}</p>
+                <p class="kv"><i class="dot"></i> ${esc(f.nombre)} · ${fmt(p.vida)}</p>
+              </summary>
+              <div class="body">
+                <p class="kv"><b>Papel:</b> ${fmt(p.rol)} · <b>Tomos:</b> ${p.tomos.map(tomoLink).join(', ')}</p>
+                <p>${fmt(p.bio)}</p>
+                <p class="kv"><b>Destino:</b> ${fmt(p.destino)}</p>
+              </div>
+            </details>`; }).join('')}
+        </div>
+      </div>`;
+  }
+
+  /* ---------------------------------------------------- batallas */
+  function viewBatallas() {
+    return `
+      <div class="wrap page">
+        <header class="sec-head">
+          <p class="eyebrow">Hechos de armas</p>
+          <h1 class="hero-title" style="font-size:var(--step-3)">Batallas y acontecimientos</h1>
+          <p>Ordenados por año (calendario propuesto: año 0 = Batalla de Orion-34).</p>
+        </header>
+        <div class="rows">
+          ${L.batallas.slice().sort((a, b) => a.anio - b.anio).map(b => `
+            <div class="row" id="batalla-${b.id}">
+              <div class="row-year">${fmt('{' + b.anio + ' DO}')}</div>
+              <div>
+                <h3>${fmt(b.nombre)}</h3>
+                <dl class="facts">
+                  <dt>Tomo</dt><dd>${tomoLink(b.tomo)}</dd>
+                  <dt>Lugar</dt><dd>${lugLink(b.lugar)}</dd>
+                  <dt>Bandos</dt><dd>${fmt(b.bandos)}</dd>
+                  <dt>Mandos</dt><dd>${fmt(b.mandos)}</dd>
+                  <dt>Resultado</dt><dd>${fmt(b.resultado)}</dd>
+                  <dt>Consecuencias</dt><dd>${fmt(b.consecuencias)}</dd>
+                </dl>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  /* ---------------------------------------------------- cronología */
+  function viewCronologia() {
+    let lastTomo = undefined;
+    const items = L.cronologia.map(c => {
+      let head = '';
+      if (c.tomo !== lastTomo) {
+        const t = c.tomo ? tomoNum(c.tomo) : null;
+        head = `<li class="tl-era" style="display:block">${t ? `Tomo ${t.num} · ${esc(t.titulo)}` : 'Antes de las Grandes Guerras'}</li>`;
+        lastTomo = c.tomo;
+      }
+      return head + `
+        <li>
+          <span class="t-year">${fmt(c.anio)}</span>
+          <div class="t-body">
+            <p>${fmt(c.texto)}</p>
+            <div class="t-meta">${badge(c.src)}${c.tomo ? tomoLink(c.tomo) : ''}</div>
+          </div>
+        </li>`;
+    }).join('');
+    return `
+      <div class="wrap page">
+        <header class="sec-head">
+          <p class="eyebrow">Línea temporal</p>
+          <h1 class="hero-title" style="font-size:var(--step-3)">Cronología</h1>
+          <p>Del encendido del Reactor Oscuro al presente. Las fechas exactas son una propuesta de trabajo: el año 0 es la Batalla de Orion-34.</p>
+        </header>
+        <ol class="timeline">${items}</ol>
+      </div>`;
+  }
+
+  /* ---------------------------------------------------- mapa */
+  const W = 160, H = 100;
+  const px = l => ({ x: l.left / 100 * W, y: l.top / 100 * H });
+  function viewMapa(selId) {
+    return `
+      <div class="wrap page">
+        <header class="sec-head">
+          <p class="eyebrow">Geografía</p>
+          <h1 class="hero-title" style="font-size:var(--step-3)">Mapa Galáctico Conceptual</h1>
+          <p>Las esferas de influencia tras la Última Gran Guerra. Las posiciones de los siete sistemas originales son las de tu web; el resto se han colocado según su papel en la historia. Pulsa un sistema para ver su ficha.</p>
+        </header>
+        <div class="map-controls">
+          <label for="map-era">Resaltar</label>
+          <select id="map-era">
+            <option value="">Todos los sistemas</option>
+            ${L.tomos.map(t => `<option value="${t.id}">Tomo ${t.num}. ${esc(t.titulo)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="map-layout">
+          <div class="map-box">${mapSVG()}</div>
+          <aside class="map-panel" id="map-panel" aria-live="polite"></aside>
+        </div>
+      </div>`;
+  }
+  function mapSVG() {
+    const caps = { rilur: 'rilur-prime', dubitsa: 'dubitsa-prime', vinica: 'vinica-prime', principados: 'union-este', andalus: 'portus' };
+    const spheres = Object.entries(caps).map(([fid, lid]) => {
+      const f = fac(fid), p = px(lug(lid));
+      const r = 7 + f.poder * 0.55;
+      return `<circle class="map-sphere" cx="${p.x}" cy="${p.y}" r="${r}" fill="${f.color}" fill-opacity=".1" stroke="${f.color}" stroke-opacity=".45" ${fid === 'andalus' ? 'stroke-dasharray="1 .8"' : ''}/>`;
+    }).join('');
+    const rings = [14, 28, 42].map(r => `<ellipse class="map-ring" cx="${W / 2}" cy="${H / 2}" rx="${r * 1.55}" ry="${r}"/>`).join('');
+    const grid = [];
+    for (let x = 20; x < W; x += 20) grid.push(`<line class="map-grid" x1="${x}" y1="0" x2="${x}" y2="${H}"/>`);
+    for (let y = 20; y < H; y += 20) grid.push(`<line class="map-grid" x1="0" y1="${y}" x2="${W}" y2="${y}"/>`);
+    const pts = L.lugares.map(l => {
+      const p = px(l);
+      const color = l.faccion === 'neutral' ? '#a855f7' : facColor(l.faccion);
+      const right = p.x < 128;
+      return `
+        <g class="map-pt" data-id="${l.id}" tabindex="0" role="button" aria-label="${esc(plain(l.nombre))}">
+          <circle class="halo" cx="${p.x}" cy="${p.y}" r="3"/>
+          <circle class="core" cx="${p.x}" cy="${p.y}" r="1.4" fill="${color}"/>
+          <text x="${right ? p.x + 2.6 : p.x - 2.6}" y="${p.y + .9}" text-anchor="${right ? 'start' : 'end'}">${esc(plain(l.nombre))}</text>
+        </g>`;
+    }).join('');
+    const portus = px(lug('portus')), vac = px(lug('paso-vacio'));
+    return `
+      <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Mapa galáctico">
+        ${grid.join('')}${rings}${spheres}
+        <path class="map-route" d="M${portus.x} ${portus.y} L${vac.x} ${vac.y}"/>
+        <text class="map-note" x="${W - 2}" y="${vac.y + 4.5}" text-anchor="end">→ galaxia de Andalus</text>
+        <text class="map-note" x="2" y="${H - 2}">Esferas: influencia en el presente (68 DO) · línea discontinua = restos dispersos</text>
+        ${pts}
+      </svg>`;
+  }
+  function mapPanel(id) {
+    const panel = document.getElementById('map-panel');
+    if (!panel) return;
+    const l = lug(id);
+    if (!l) {
+      panel.innerHTML = `<p class="label">Leyenda</p>
+        ${L.facciones.filter(f => f.id !== 'sintonia').map(f => `<p class="kv"><i class="dot" style="--fc:${f.color}"></i> ${esc(f.nombre)}</p>`).join('')}
+        <p class="kv"><i class="dot" style="--fc:#9ca3af"></i> Caballeros de la Sintonía</p>
+        <p class="kv"><i class="dot" style="--fc:#a855f7"></i> Neutral / campo de batalla</p>
+        <p class="muted" style="font-size:.88rem">Selecciona un sistema en el mapa para ver su historia.</p>`;
+      return;
+    }
+    const bs = L.batallas.filter(b => b.lugar === l.id);
+    panel.innerHTML = `
+      <p class="label">${fmt(l.tipo)}</p>
+      <h3>${fmt(l.nombre)}</h3>
+      <div class="chips">${l.faccion !== 'neutral' ? facChip(l.faccion) : `<span class="chip"><i class="dot" style="--fc:#a855f7"></i>${esc(l.afiliacion)}</span>`}${badge(l.src)}</div>
+      <p>${fmt(l.texto)}</p>
+      ${bs.length ? `<p class="label">Batallas aquí</p><p style="font-size:.9rem">${bs.map(b => batLink(b.id)).join('<br>')}</p>` : ''}`;
+    document.querySelectorAll('.map-pt').forEach(g => g.classList.toggle('sel', g.dataset.id === id));
+  }
+  function mapEra(tid) {
+    const t = L.tomos.find(x => x.id === tid);
+    document.querySelectorAll('.map-pt').forEach(g => g.classList.toggle('dim', !!t && !t.lugares.includes(g.dataset.id)));
+  }
+
+  /* ---------------------------------------------------- glosario */
+  function viewGlosario() {
+    const items = L.glosario.slice().sort((a, b) => plain(a.t).localeCompare(plain(b.t), 'es'));
+    return `
+      <div class="wrap page">
+        <header class="sec-head">
+          <p class="eyebrow">Términos</p>
+          <h1 class="hero-title" style="font-size:var(--step-3)">Glosario</h1>
+          <p>Conceptos, órdenes, tecnologías y tratados del universo.</p>
+        </header>
+        <dl class="gloss" style="max-width:960px">
+          ${items.map(g => `<dt>${fmt(g.t)}${badge(g.src)}</dt><dd>${fmt(g.d)}</dd>`).join('')}
+        </dl>
+      </div>`;
+  }
+
+  /* ---------------------------------------------------- canon */
+  function viewCanon() {
+    const C = L.canon;
+    return `
+      <div class="wrap page">
+        <header class="sec-head">
+          <p class="eyebrow">Registro</p>
+          <h1 class="hero-title" style="font-size:var(--step-3)">Registro de canon</h1>
+          <p>De dónde sale cada dato, qué decidiste al reconstruir el lore y qué falta por cerrar antes de declarar el canon definitivo.</p>
+        </header>
+        <div class="canon-grid">
+          <section class="fac-sec">
+            <h2>Fuentes</h2>
+            <dl class="qa">${C.fuentes.map(f => `<div><dt>${esc(f.nombre)}</dt><dd>${f.url ? `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.url)}</a><br>` : ''}${esc(f.nota)}</dd></div>`).join('')}</dl>
+          </section>
+          <section class="fac-sec">
+            <h2>Tus decisiones (2 oct 2026) ${badge('A')}</h2>
+            <dl class="qa">${C.decisiones.map(d => `<div><dt>${esc(d.p)}</dt><dd>${esc(d.r)}</dd></div>`).join('')}</dl>
+          </section>
+          <section class="fac-sec">
+            <h2>Propuestas por aprobar ${badge('P')}</h2>
+            <p class="muted">Todo lo que inventé para unir las piezas. Cada una puede aprobarse, cambiarse o descartarse.</p>
+            <ul class="checklist">${C.propuestas.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+          </section>
+          <section class="fac-sec">
+            <h2>Preguntas abiertas</h2>
+            <ul class="checklist" style="--fc:var(--brass)">${C.pendientes.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+          </section>
+          <section class="fac-sec">
+            <h2>Exportar</h2>
+            <p class="muted">Copia la Biblia completa para guardarla o para usarla en un motor de juego. En tu carpeta también están <span class="mono">BIBLIA_CANON.md</span> y <span class="mono">lore.json</span>.</p>
+            <div class="export">
+              <button class="btn" id="copy-md">Copiar Biblia en Markdown</button>
+              <button class="btn ghost" id="copy-json">Copiar datos en JSON</button>
+            </div>
+            <p class="toast" id="toast" role="status"></p>
+            <div id="fallback"></div>
+          </section>
+        </div>
+      </div>`;
+  }
+  function copyText(text, what) {
+    const toast = document.getElementById('toast');
+    const fb = document.getElementById('fallback');
+    const done = () => { toast.textContent = what + ' copiado al portapapeles (' + Math.round(text.length / 1024) + ' KB).'; fb.innerHTML = ''; };
+    const fail = () => {
+      toast.textContent = 'No se pudo copiar automáticamente. Selecciona el texto de abajo y cópialo.';
+      fb.innerHTML = '<textarea class="copy-fallback" id="fb-text" readonly></textarea>';
+      const ta = document.getElementById('fb-text'); ta.value = text; ta.focus(); ta.select();
+    };
+    try { navigator.clipboard.writeText(text).then(done, fail); } catch (e) { fail(); }
+  }
+
+  /* ---------------------------------------------------- estrellas */
+  function drawStars() {
+    const c = document.querySelector('.stars');
+    if (!c) return;
+    const r = c.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    c.width = r.width * dpr; c.height = r.height * dpr;
+    const ctx = c.getContext('2d');
+    ctx.scale(dpr, dpr);
+    const rgb = getComputedStyle(document.documentElement).getPropertyValue('--star').trim() || '231,227,215';
+    let s = 7;
+    const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+    const n = Math.round(r.width * r.height / 2600);
+    for (let i = 0; i < n; i++) {
+      const x = rnd() * r.width, y = rnd() * r.height, big = rnd() > .94;
+      ctx.fillStyle = `rgba(${rgb},${(.15 + rnd() * .5).toFixed(2)})`;
+      ctx.beginPath(); ctx.arc(x, y, big ? 1.3 : .7, 0, Math.PI * 2); ctx.fill();
+    }
+    // brazo galáctico tenue a la derecha
+    const g = ctx.createRadialGradient(r.width * .82, r.height * .45, 0, r.width * .82, r.height * .45, r.width * .35);
+    g.addColorStop(0, `rgba(${rgb},.07)`); g.addColorStop(1, `rgba(${rgb},0)`);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, r.width, r.height);
+  }
+
+  /* ---------------------------------------------------- router */
+  const NAV = [['inicio', 'Biblioteca'], ['facciones', 'Facciones'], ['personajes', 'Personajes'], ['batallas', 'Batallas'], ['cronologia', 'Cronología'], ['mapa', 'Mapa'], ['glosario', 'Glosario'], ['canon', 'Canon']];
+  function navFor(key) {
+    if (key.startsWith('tomo-')) return 'inicio';
+    if (key.startsWith('faccion-')) return 'facciones';
+    if (key.startsWith('personaje-')) return 'personajes';
+    if (key.startsWith('batalla-')) return 'batallas';
+    if (key.startsWith('lugar-')) return 'mapa';
+    return key;
+  }
+  let current = null;
+  function route() {
+    const hash = decodeURIComponent(location.hash.slice(1)) || 'inicio';
+    const key = hash.split('.')[0];
+    let html = null, after = null, viewKey = key;
+
+    if (key === 'inicio' || key === 'biblioteca') { viewKey = 'inicio'; html = viewHome; after = drawStars; }
+    else if (key.startsWith('tomo-')) { const t = L.tomos.find(x => x.id === key); if (t) html = () => viewTomo(t); }
+    else if (key === 'facciones') html = viewFacciones;
+    else if (key.startsWith('faccion-')) { const f = fac(key.slice(8)); if (f) html = () => viewFaccion(f); }
+    else if (key === 'personajes' || key.startsWith('personaje-')) {
+      viewKey = 'personajes'; html = viewPersonajes;
+      after = () => {
+        bindPeople();
+        const d = key.startsWith('personaje-') && document.getElementById(key);
+        if (d) { d.open = true; d.classList.add('flash'); }
+      };
+    }
+    else if (key === 'batallas' || key.startsWith('batalla-')) {
+      viewKey = 'batallas'; html = viewBatallas;
+      after = () => { const r = key.startsWith('batalla-') && document.getElementById(key); if (r) r.classList.add('flash'); };
+    }
+    else if (key === 'cronologia') html = viewCronologia;
+    else if (key === 'mapa' || key.startsWith('lugar-')) {
+      viewKey = 'mapa'; html = () => viewMapa();
+      after = () => { bindMap(); mapPanel(key.startsWith('lugar-') ? key.slice(6) : null); };
+    }
+    else if (key === 'glosario') html = viewGlosario;
+    else if (key === 'canon') {
+      html = viewCanon;
+      after = () => {
+        document.getElementById('copy-md').onclick = () => copyText(L.aMarkdown(new Date().toISOString().slice(0, 10)), 'Markdown');
+        document.getElementById('copy-json').onclick = () => copyText(L.aJSON(), 'JSON');
+      };
+    }
+    if (!html) { location.hash = '#inicio'; return; }
+
+    const sameView = current === key && hash.includes('.');
+    if (!sameView) {
+      app.innerHTML = html();
+      if (after) after();
+      current = key;
+    }
+    document.querySelectorAll('.nav a').forEach(a => a.setAttribute('aria-current', a.dataset.k === navFor(viewKey) ? 'page' : 'false'));
+    const target = hash.includes('.') ? document.getElementById(hash) : (key.match(/^(personaje|batalla)-/) ? document.getElementById(key) : null);
+    if (target) requestAnimationFrame(() => target.scrollIntoView({ block: 'start' }));
+    else if (!sameView) window.scrollTo(0, 0);
+    const t = L.tomos.find(x => x.id === key);
+    document.title = (t ? 'Tomo ' + t.num + ' · ' : '') + 'Holocrón Galáctico';
+  }
+
+  function bindPeople() {
+    const btns = document.querySelectorAll('.toolbar .chip');
+    btns.forEach(b => b.addEventListener('click', () => {
+      btns.forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+      document.querySelectorAll('.person').forEach(p => { p.hidden = !!b.dataset.f && p.dataset.f !== b.dataset.f; });
+    }));
+  }
+  function bindMap() {
+    document.querySelectorAll('.map-pt').forEach(g => {
+      const go = () => { history.replaceState(null, '', '#lugar-' + g.dataset.id); current = 'lugar-' + g.dataset.id; mapPanel(g.dataset.id); };
+      g.addEventListener('click', go);
+      g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    });
+    const sel = document.getElementById('map-era');
+    sel.addEventListener('change', () => mapEra(sel.value));
+  }
+
+  /* ---------------------------------------------------- cabecera, tema y propuestas */
+  document.getElementById('nav').innerHTML = NAV.map(([k, label]) => `<a href="#${k}" data-k="${k}">${label}</a>`).join('');
+  const themeBtn = document.getElementById('theme-btn');
+  const THEMES = ['sistema', 'oscuro', 'claro'];
+  function applyTheme(t) {
+    if (t === 'oscuro') document.documentElement.setAttribute('data-theme', 'dark');
+    else if (t === 'claro') document.documentElement.setAttribute('data-theme', 'light');
+    else document.documentElement.removeAttribute('data-theme');
+    themeBtn.textContent = 'Tema: ' + t;
+    drawStars();
+  }
+  let theme = store.get('holocron-tema') || 'sistema';
+  if (!THEMES.includes(theme)) theme = 'sistema';
+  themeBtn.addEventListener('click', () => {
+    theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
+    store.set('holocron-tema', theme);
+    applyTheme(theme);
+  });
+  const propBtn = document.getElementById('prop-btn');
+  function applyProp(on) {
+    document.documentElement.classList.toggle('hide-prop', !on);
+    propBtn.textContent = on ? 'Propuestas: visibles' : 'Propuestas: ocultas';
+    propBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  let propOn = store.get('holocron-prop') !== 'no';
+  propBtn.addEventListener('click', () => { propOn = !propOn; store.set('holocron-prop', propOn ? 'si' : 'no'); applyProp(propOn); });
+
+  window.addEventListener('hashchange', route);
+  let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(drawStars, 150); });
+  applyProp(propOn);
+  route();
+  applyTheme(theme);
+})();
+
+</script>
+</body>
+</html>
