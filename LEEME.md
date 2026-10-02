@@ -2,6 +2,9 @@
 
 Reconstrucción del lore del universo de Rilur, Dubitsa, Vinica y Andalus, hecha el 2 de octubre de 2026.
 
+- **Web pública:** https://crepigold.github.io/holocron-galactico/
+- **Repositorio:** https://github.com/crepigold/holocron-galactico
+
 ## Qué hay aquí
 
 | Archivo | Para qué sirve |
@@ -33,3 +36,21 @@ node herramientas/construir.js
 ```
 
 El script comprueba que todas las referencias (personajes, batallas, lugares, facciones) existen y que las llaves están cerradas. Después regenera `BIBLIA_CANON.md`, `lore.json` y `Holocron_Galactico.html`.
+
+## Publicar cambios en la web
+
+Sube los cambios a GitHub y la web se actualiza sola en uno o dos minutos:
+
+```bash
+git add -A
+```
+
+```bash
+git commit -m "Describe aquí el cambio"
+```
+
+```bash
+git push
+```
+
+GitHub vuelve a validar los datos antes de publicar. Si hay una referencia rota, no publica y verás el error en la pestaña *Actions* del repositorio.
