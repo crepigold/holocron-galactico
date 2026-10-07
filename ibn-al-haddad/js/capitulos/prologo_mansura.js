@@ -335,6 +335,7 @@
       z.cine(false);
       z.objetivo('Abríos paso por las calles de Mansura');
       IH.desbloquearCronica('mansura');
+      IH.notificar(`Beber del odre: ${IH.entrada.etiqueta('curar')}  ·  Voltereta: ${IH.entrada.etiqueta('esquivar')}`, { vida: 7 });
     },
     disparadores: [
       {

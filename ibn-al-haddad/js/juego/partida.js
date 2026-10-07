@@ -104,7 +104,7 @@
   IH.cronicasDesbloqueadas = function () {
     return new Set(leer(CLAVE_CRONICAS) || []);
   };
-  IH.desbloquearCronica = function (id) {
+  IH.desbloquearCronica = function (id, opc = {}) {
     const c = IH.CRONICAS[id];
     if (!c) return;
     const P = IH.partida;
@@ -113,6 +113,7 @@
     const nueva = !todas.has(id);
     todas.add(id);
     escribir(CLAVE_CRONICAS, [...todas]);
+    if (opc.silencio) return;
     IH.audio.sfx('pergamino');
     IH.audio.estribillo('cronica');
     IH.notificar('Crónica: ' + c.titulo + (nueva ? '  ·  léela en el menú' : ''), { vida: 4.5 });

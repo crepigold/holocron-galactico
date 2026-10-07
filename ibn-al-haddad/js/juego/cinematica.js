@@ -66,6 +66,7 @@
       if (p.ambiente !== undefined) IH.audio.ambiente(p.ambiente);
       this.sfxPendientes = (p.sfx || []).map((s) => Object.assign({}, s));
       if (p.estribillo) IH.audio.estribillo(p.estribillo);
+      if (p.cronica) IH.desbloquearCronica(p.cronica, { silencio: true });
       this.particulas.limpiar();
     }
 

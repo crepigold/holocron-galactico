@@ -324,7 +324,7 @@
     estadoNormal(dt, h, ctrl) {
       const E = IH.entrada;
       const correr = !this.tranquilo || (ctrl && E.pulsado('esquivar'));
-      const vmax = this.tranquilo ? (correr ? 112 : 60) : 112;
+      const vmax = this.tranquilo ? (correr ? 118 : 70) : 112;
       const acel = this.enSuelo ? 1300 : 800;
       this.vx = U.aproximar(this.vx, h * vmax, acel * dt);
       if (h !== 0) this.dir = h;

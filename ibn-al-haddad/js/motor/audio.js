@@ -73,6 +73,7 @@
     retornoReverb.gain.value = 0.55;
     envioReverb.connect(convolver).connect(retornoReverb).connect(maestro);
 
+    A._nodos = { maestro, busMusica, busEfectos, busAmbiente };
     ruidoBlanco = crearRuido(2.5, false);
     ruidoRosa = crearRuido(4, true);
     A.aplicarVolumenes();
@@ -803,11 +804,12 @@
       golpeTono(d, t, 110, 60, 0.12, 0.35);
     },
     tajo(t, o, d) {
-      barrido(d, t, 700 * (o.tono || 1), 3800 * (o.tono || 1), 0.16, 2.2, 0.5);
+      barrido(d, t, 700 * (o.tono || 1), 3800 * (o.tono || 1), 0.16, 1.6, 1.2);
+      barrido(d, t, 300 * (o.tono || 1), 900 * (o.tono || 1), 0.14, 1, 0.35, 'lowpass');
     },
     tajoFuerte(t, o, d) {
-      barrido(d, t, 300, 2600, 0.3, 1.6, 0.6);
-      barrido(d, t + 0.05, 200, 900, 0.3, 1, 0.25, 'lowpass');
+      barrido(d, t, 300, 2600, 0.3, 1.4, 1.2);
+      barrido(d, t + 0.05, 200, 900, 0.3, 1, 0.5, 'lowpass');
     },
     choque(t, o, d) {
       const f = 480 + Math.random() * 120;
@@ -821,8 +823,8 @@
       metal(d, t + 0.05, f * 2, [[1, 0.2], [1.5, 0.15]], 1.5, 0.4);
     },
     golpe(t, o, d) {
-      golpeTono(d, t, 140, 55, 0.18, 0.75);
-      golpeRuido(d, t, 'lowpass', 1600, 0.9, 0.09, 0.6);
+      golpeTono(d, t, 140, 55, 0.2, 1.1);
+      golpeRuido(d, t, 'lowpass', 1600, 0.9, 0.1, 0.9);
     },
     golpeArmadura(t, o, d) {
       metal(d, t, 330, [[1, 0.3], [2.4, 0.25], [4.1, 0.15]], 0.3, 0.6);
@@ -931,9 +933,9 @@
       golpeRuido(d, t, 'bandpass', 3500 + Math.random() * 800, 4, 0.02, 0.05);
     },
     explosion(t, o, d) {
-      golpeTono(d, t, 90, 30, 1.6, 0.9);
-      golpeRuido(d, t, 'lowpass', 900, 0.5, 1.8, 0.9, ruidoRosa);
-      golpeRuido(d, t, 'bandpass', 2500, 0.8, 0.4, 0.4);
+      golpeTono(d, t, 90, 30, 1.6, 0.5);
+      golpeRuido(d, t, 'lowpass', 900, 0.5, 1.8, 0.45, ruidoRosa);
+      golpeRuido(d, t, 'bandpass', 2500, 0.8, 0.4, 0.22);
     },
     fuego(t, o, d) {
       barrido(d, t, 300, 1500, 1.0, 0.6, 0.4, 'lowpass', ruidoRosa);

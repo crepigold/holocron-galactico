@@ -861,7 +861,7 @@
     for (let px = 60; px < c3.lz.w; px += rng.entero(90, 200)) F.palmera(x3, px, 282, rng.entero(40, 70), rng, { hoja: '#1a2418', hojaLuz: '#222e1e', tronco: '#1e160e', datiles: false });
     capas.push(c3);
     const c4 = capa(W, 1);
-    F.sueloCalle(c4.lz.x, 0, W, suelo, 60, rng, H, { color: '#3a3428', paja: false });
+    F.sueloCalle(c4.lz.x, 0, W, suelo, 60, rng, H, { color: '#5e5442', paja: false });
     capas.push(c4);
     const c5 = capa(anchoCapa(W, 1.3), 1.3);
     c5.delante = true;

@@ -229,7 +229,7 @@
       z.camaraSeguir();
       z.cine(false);
       z.objetivo('Aviva el fuego con el fuelle');
-      z.buscar('fuelle').marca = null;
+      IH.notificar(`Moverse: ${IH.entrada.etiqueta('izq')} ${IH.entrada.etiqueta('der')}  ·  Interactuar: ${IH.entrada.etiqueta('interactuar')}`, { vida: 7 });
     },
   };
 
@@ -264,6 +264,13 @@
     ],
     objetivo: (z) => (z.bandera('espadasRecuperadas') ? 'Cruza Bab Zuwayla y sube al maydan de la Ciudadela' : 'Lleva las espadas al maydan, bajo la Ciudadela'),
     poblar(z) {
+      if (!z.bandera('pistaCorrer')) {
+        z.bandera('pistaCorrer', true);
+        z.ejecutar((function* () {
+          yield 2.5;
+          IH.notificar(`Correr: mantén ${IH.entrada.etiqueta('esquivar')}  ·  Los «!» y «?» señalan a quien tiene algo que contar`, { vida: 7 });
+        })(), 'pista', false);
+      }
       // estructuras visibles de la carrera por los tejados
       z.objeto({ tipo: 'cajas', x: 1650, w: 18, h: 18 });
       z.objeto({ tipo: 'cajas', x: 1668, w: 18, h: 34 });
@@ -426,6 +433,7 @@
           z.camaraSeguir();
           z.cine(false);
           z.objetivo('Atrapa al chico que ha robado el fardo de espadas');
+          IH.notificar(`Saltar: ${IH.entrada.etiqueta('saltar')}  ·  sube por las cajas y los toldos`, { vida: 7 });
           z.ejecutar(persecucion(z), 'persecucion', false);
         },
       },

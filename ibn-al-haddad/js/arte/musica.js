@@ -41,7 +41,7 @@
   ];
   const bajoTitulo = [1, 1, 1, 4, 6, 5, 4, 1];
   P.titulo = {
-    bpm: 66, maqam: 'hijaz', tonica: D3, volumen: 0.95,
+    bpm: 66, maqam: 'hijaz', tonica: D3, volumen: 1.75,
     compas(n) {
       const ev = [];
       if (n % 2 === 0) ev.push({ inst: 'bordon', grado: 1, octava: -1, paso: 0, dur: 32, vel: 0.8 });
@@ -67,7 +67,7 @@
     "5 . . . . . 4 . 3 . 2 . 1 . . .",
   ];
   P.cronista = {
-    bpm: 60, maqam: 'hijaz', tonica: D3, volumen: 0.75,
+    bpm: 60, maqam: 'hijaz', tonica: D3, volumen: 1.5,
     compas(n, rng) {
       const ev = [];
       if (n % 4 === 0) {
@@ -94,7 +94,7 @@
   ];
   const respuestaCairo = [". . . . . . . . . . . . 5 4 3 4", ". . . . . . . . . . . . 1 2 3 2"];
   P.cairo = {
-    bpm: 108, maqam: 'bayati', tonica: D3, volumen: 0.85,
+    bpm: 108, maqam: 'bayati', tonica: D3, volumen: 1.5,
     compas(n, rng) {
       const ev = [];
       const f = n % 16;
@@ -116,7 +116,7 @@
     "3 - 4 3 2 - 1 - 2 - 1 - - - . .",
   ];
   P.forja = {
-    bpm: 84, maqam: 'rast', tonica: D3, volumen: 0.8,
+    bpm: 84, maqam: 'rast', tonica: D3, volumen: 1.6,
     compas(n) {
       const ev = [];
       ev.push({ inst: 'campanilla', frec: 587.33, paso: 0, vel: 0.5 });
@@ -132,7 +132,7 @@
 
   // ------------------------------------------------------------------ MAYDAN
   P.maydan = {
-    bpm: 116, maqam: 'hijazkar', tonica: D3, volumen: 0.85,
+    bpm: 116, maqam: 'hijazkar', tonica: D3, volumen: 1.1,
     compas(n) {
       const ev = [];
       ev.push(...R('B . . . . . N . B . N . . . N .', { vel: 0.7 }));
@@ -157,7 +157,7 @@
     "1, - - - - - - - - - - - . . . .",
   ];
   P.despedida = {
-    bpm: 56, maqam: 'saba', tonica: D3, volumen: 0.95,
+    bpm: 56, maqam: 'saba', tonica: D3, volumen: 0.75,
     compas(n) {
       const ev = [];
       if (n % 2 === 0) ev.push({ inst: 'bordon', grado: 1, octava: -1, paso: 0, dur: 32, vel: 0.55 });
@@ -176,7 +176,7 @@
     "4 . 3 . 2 . . . 1 . . . . . . .",
   ];
   P.campamento = {
-    bpm: 72, maqam: 'kurd', tonica: D3, volumen: 0.75,
+    bpm: 72, maqam: 'kurd', tonica: D3, volumen: 1.3,
     compas(n) {
       const ev = [];
       if (n % 4 === 0) ev.push({ inst: 'bordon', grado: 1, octava: -1, paso: 0, dur: 64, vel: 0.5 });
@@ -189,7 +189,7 @@
 
   // ------------------------------------------------------------------ TENSIÓN
   P.tension = {
-    bpm: 92, maqam: 'hijaz', tonica: D3, volumen: 0.85,
+    bpm: 92, maqam: 'hijaz', tonica: D3, volumen: 1.0,
     compas(n) {
       const ev = [];
       if (n % 2 === 0) ev.push({ inst: 'bordon', grado: 1, octava: -1, paso: 0, dur: 32, vel: 0.6 });
@@ -213,7 +213,7 @@
     "1 - - - - - - - . . . . . . . .",
   ];
   P.batalla = {
-    bpm: 140, maqam: 'hijaz', tonica: D3, volumen: 0.9,
+    bpm: 140, maqam: 'hijaz', tonica: D3, volumen: 0.68,
     compas(n) {
       const ev = [];
       ev.push(...R('B . . . . . . . B . . . . . B .', { vel: 0.8 }));
@@ -230,7 +230,7 @@
 
   // ------------------------------------------------------------------ JEFE
   P.jefe = {
-    bpm: 150, maqam: 'kurd', tonica: D3, volumen: 0.95,
+    bpm: 150, maqam: 'kurd', tonica: D3, volumen: 0.62,
     compas(n) {
       const ev = [];
       ev.push(...R('B . . B . . B . B . . B . . B .', { vel: 0.85 }));
@@ -254,7 +254,7 @@
     "1 - - - - - - - - - - - - - - -",
   ];
   P.cruzados = {
-    bpm: 58, maqam: 'dorico', tonica: D3, volumen: 0.9,
+    bpm: 58, maqam: 'dorico', tonica: D3, volumen: 2.4,
     compas(n) {
       const ev = [];
       if (n % 2 === 0) ev.push({ inst: 'bordon', grado: 1, octava: -1, paso: 0, dur: 32, vel: 0.5 });
@@ -268,7 +268,7 @@
 
   // ------------------------------------------------------------------ MONGOLES
   P.mongoles = {
-    bpm: 100, maqam: 'pentatonica', tonica: 73.42, volumen: 0.95,
+    bpm: 100, maqam: 'pentatonica', tonica: 73.42, volumen: 1.25,
     compas(n) {
       const ev = [];
       ev.push(...R('G . . G . G . . G . . G . G . .', { vel: 0.6 }));

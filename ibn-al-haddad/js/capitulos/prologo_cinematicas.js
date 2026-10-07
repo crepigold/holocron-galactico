@@ -61,6 +61,7 @@
         lamina: 'mapa',
         musica: 'cruzados',
         camara: { x0: 0, y0: 60, x1: 420, y1: 230 },
+        cronica: 'luis_ix',
         mapa: { regiones: ['francia', 'mediterraneo', 'egipto', 'ultramar'], ciudades: ['aigues', 'roma', 'limasol', 'damieta', 'cairo', 'acre'], resaltar: ['aigues', 'damieta'], rutas: [{ id: 'cruzada', t0: 4, dur: 16, barco: true }, { id: 'chipreDamieta', t0: 21, dur: 5, barco: true }], fecha: '1248' },
         texto: [
           'Mientras tanto, al otro lado del mar, el rey de los francos, *Luis*, había tomado la cruz.',
@@ -171,6 +172,7 @@
         lamina: 'sultan',
         estilo: 'arriba',
         musica: 'despedida',
+        cronica: 'shajar',
         ambiente: 'interior',
         camara: { x0: 80, x1: 40 },
         texto: [

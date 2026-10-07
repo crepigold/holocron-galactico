@@ -5,6 +5,10 @@ Reconstrucción del lore del universo de Rilur, Dubitsa, Vinica y Andalus, hecha
 - **Web pública:** https://crepigold.github.io/holocron-galactico/
 - **Repositorio:** https://github.com/crepigold/holocron-galactico
 
+## Videojuego: Ibn al-Haddad
+
+La carpeta [`ibn-al-haddad/`](ibn-al-haddad/) contiene un videojuego de acción 2D ambientado en el Egipto de 1249 (Capítulo I · Prólogo jugable). Para jugar, abre `ibn-al-haddad/index.html`; las instrucciones están en [`ibn-al-haddad/LEEME.md`](ibn-al-haddad/LEEME.md).
+
 ## Qué hay aquí
 
 | Archivo | Para qué sirve |
