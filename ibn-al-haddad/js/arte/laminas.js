@@ -757,7 +757,7 @@
         F.montes(mx.x, W, 230, 46, U.mezclar(H.lejos, H.bruma, 0.25), 8, 0.01);
         x.drawImage(mx.c, 0, 0, W, 360);
         x.fillStyle = U.mezclar(H.lejos, H.bruma, 0.25);
-        F.ciudadela(x, 1180, 196, 1.3, U.mezclar('#c9ad86', H.bruma, hora === 'noche' ? 0.6 : 0.25));
+        F.ciudadela(x, 1180, 200, 1.3, U.mezclar('#c9ad86', H.bruma, hora === 'noche' ? 0.6 : 0.25), U.mezclar(H.lejos, H.bruma, 0.25));
         // ciudad en varias capas
         const colL = H.enlucidos.map((c) => U.mezclar(c, H.bruma, 0.5));
         let bx = 220;

@@ -20,6 +20,7 @@
     subtitulo: 'La víspera · 7 de febrero de 1250',
     ancho: 1800,
     fondo: { escena: 'campamento', opc: {} },
+    transeuntes: { capa: 3, y: 296, n: 12, ropas: ['#3a3a4a', '#4a3a3a', '#5a5040'], bruma: '#202840' },
     musica: 'campamento',
     ambienteSonoro: 'campamento',
     tranquila: true,

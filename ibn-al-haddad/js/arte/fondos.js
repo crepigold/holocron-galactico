@@ -503,39 +503,62 @@
   };
 
   // Ciudadela de Saladino sobre el Muqattam (lejana)
-  F.ciudadela = function (x, cx, suelo, esc, color) {
+  F.ciudadela = function (x, cx, suelo, esc, color, roca) {
     const sombra = U.tono(color, -0.15);
+    const sombra2 = U.tono(color, -0.28);
     const luz = U.tono(color, 0.1);
-    const muro = (x0, x1, y, alto) => {
-      x.fillStyle = color;
-      x.fillRect(Math.round(x0), Math.round(y - alto), Math.round(x1 - x0), Math.round(alto));
-      x.fillStyle = luz;
-      x.fillRect(Math.round(x0), Math.round(y - alto), Math.round(x1 - x0), 1);
-      for (let ax = x0; ax < x1; ax += 3 * esc) {
-        x.fillStyle = color;
-        x.fillRect(Math.round(ax), Math.round(y - alto - 2 * esc), Math.max(1, Math.round(1.5 * esc)), Math.round(2 * esc));
-      }
+    const R = (a, b, w, h, c) => {
+      x.fillStyle = c;
+      x.fillRect(Math.round(a), Math.round(b), Math.max(1, Math.round(w)), Math.max(1, Math.round(h)));
     };
-    const torre = (tx, y, w, alto) => {
-      x.fillStyle = color;
-      x.fillRect(Math.round(tx - w / 2), Math.round(y - alto), Math.round(w), Math.round(alto));
-      x.fillStyle = sombra;
-      x.fillRect(Math.round(tx + w / 6), Math.round(y - alto), Math.round(w / 3), Math.round(alto));
-      x.fillStyle = luz;
-      x.fillRect(Math.round(tx - w / 2), Math.round(y - alto), 1, Math.round(alto));
-      for (let ax = tx - w / 2; ax < tx + w / 2; ax += 3 * esc) {
-        x.fillStyle = color;
-        x.fillRect(Math.round(ax), Math.round(y - alto - 2 * esc), Math.max(1, Math.round(1.5 * esc)), Math.round(2 * esc));
-      }
+    const almenas = (x0, x1, y) => {
+      for (let ax = x0; ax < x1 - 1; ax += 3 * esc) R(ax, y - 2 * esc, 1.6 * esc, 2 * esc, color);
+    };
+    const hiladas = (x0, x1, y0, y1) => {
+      if (esc < 1.2) return;
+      for (let yy = y0 + 3 * esc; yy < y1; yy += 3 * esc) R(x0, yy, x1 - x0, 1, U.mezclar(color, sombra, 0.5));
+    };
+    const muro = (x0, x1, y, alto) => {
+      R(x0, y - alto, x1 - x0, alto, color);
+      hiladas(x0, x1, y - alto, y);
+      R(x0, y - alto, x1 - x0, 1, luz);
+      almenas(x0, x1, y - alto);
+    };
+    const torre = (tx, y, w, alto, redonda) => {
+      R(tx - w / 2, y - alto, w, alto, color);
+      hiladas(tx - w / 2, tx + w / 2, y - alto, y);
+      if (redonda) {
+        R(tx + w / 6, y - alto, w / 3, alto, sombra);
+        R(tx + w / 3, y - alto, w / 6, alto, sombra2);
+      } else R(tx + w / 4, y - alto, w / 4, alto, sombra);
+      R(tx - w / 2, y - alto, 1, alto, luz);
+      almenas(tx - w / 2, tx + w / 2, y - alto);
+      // saeteras
+      for (let yy = y - alto + 5 * esc; yy < y - 4 * esc; yy += 7 * esc) R(tx - 0.5, yy, 1, 2 * esc, U.tono(color, -0.5));
     };
     const W = 150 * esc;
+    // espolón rocoso del Muqattam sobre el que se asienta la fortaleza
+    const r = roca || U.mezclar(color, sombra2, 0.5);
+    const ancho = W / 2 + 34 * esc, caida = 70 * esc;
+    for (let i = -ancho; i <= ancho; i++) {
+      const t = Math.abs(i) / ancho;
+      const h = Math.max(0, (1 - Math.pow(t, 2.2)) * caida + Math.sin(i * 0.21) * 2 * esc);
+      R(cx + i, suelo - 2, 1, h + 2, r);
+      if (i % 5 === 0 && h > 6) R(cx + i, suelo + h * 0.3, 1, h * 0.4, U.tono(r, -0.08));
+    }
+    R(cx - W / 2 - 4, suelo - 2, W + 8, 2, U.tono(r, 0.1));
     muro(cx - W / 2, cx + W / 2, suelo, 16 * esc);
-    for (let i = 0; i <= 6; i++) torre(cx - W / 2 + (i * W) / 6, suelo, 9 * esc, 22 * esc);
+    for (let i = 0; i <= 6; i++) torre(cx - W / 2 + (i * W) / 6, suelo, 9 * esc, 22 * esc, i % 2 === 0);
+    // puerta
+    R(cx - W / 3 - 3 * esc, suelo - 9 * esc, 6 * esc, 9 * esc, U.tono(color, -0.45));
+    R(cx - W / 3 - 3 * esc, suelo - 10 * esc, 6 * esc, 1, luz);
     // recinto alto y palacio
     muro(cx - W * 0.2, cx + W * 0.32, suelo - 16 * esc, 14 * esc);
-    torre(cx + W * 0.05, suelo - 16 * esc, 14 * esc, 26 * esc);
-    torre(cx - W * 0.15, suelo - 16 * esc, 9 * esc, 20 * esc);
+    torre(cx + W * 0.05, suelo - 16 * esc, 14 * esc, 26 * esc, false);
+    torre(cx - W * 0.15, suelo - 16 * esc, 9 * esc, 20 * esc, true);
+    for (let i = 0; i < 4; i++) R(cx + W * 0.1 + i * 6 * esc, suelo - 26 * esc, 2 * esc, 3 * esc, U.tono(color, -0.45));
     F.cupula(x, cx + W * 0.22, Math.round(suelo - 30 * esc), Math.round(6 * esc), { color, hueco: sombra });
+    F.cupula(x, cx + W * 0.28, Math.round(suelo - 30 * esc), Math.round(3.5 * esc), { color, hueco: sombra });
   };
 
   // Tienda de campaña militar (redonda, con franjas)
@@ -690,7 +713,7 @@
     // montes del Muqattam y la Ciudadela
     const c1 = capa(anchoCapa(W, 0.06), 0.06);
     F.montes(c1.lz.x, c1.lz.w, 228, 40, U.mezclar(H.lejos, H.bruma, 0.35), 3, 0.01);
-    F.ciudadela(c1.lz.x, Math.min(c1.lz.w - 100, 420), 196, 1, U.mezclar(H.lejos, H.bruma, 0.2));
+    F.ciudadela(c1.lz.x, Math.min(c1.lz.w - 100, 420), 196, 1, U.mezclar(H.lejos, H.bruma, 0.2), U.mezclar(H.lejos, H.bruma, 0.35));
     G.niebla(c1.lz, H.bruma, 150, 240, 0.0, 0.5);
     capas.push(c1);
 
@@ -781,7 +804,7 @@
     const capas = [{ lz: F.cielo(hora, { solX: 520, solY: 70, nubes: 4 }), factor: 0, fy: 0 }];
     const c1 = capa(anchoCapa(W, 0.12), 0.12);
     F.montes(c1.lz.x, c1.lz.w, 210, 70, U.mezclar(H.lejos, H.bruma, 0.15), 5, 0.008);
-    F.ciudadela(c1.lz.x, c1.lz.w * 0.5, 150, 1.7, U.mezclar('#c9ad86', H.bruma, 0.15));
+    F.ciudadela(c1.lz.x, c1.lz.w * 0.5, 160, 1.7, U.mezclar('#c9ad86', H.bruma, 0.15), U.mezclar(H.lejos, H.bruma, 0.15));
     G.niebla(c1.lz, H.bruma, 140, 240, 0.0, 0.45);
     capas.push(c1);
     const c2 = capa(anchoCapa(W, 0.35), 0.35);

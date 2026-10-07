@@ -61,6 +61,21 @@
       this.ambiente = d.ambiente !== undefined ? d.ambiente : f.ambiente || null;
       for (const l of f.luces || []) this.luces.push(Object.assign({ estatica: true }, l));
       this.lucesMapa = IH.lienzo(IH.ANCHO + 4, IH.ALTO + 4);
+      // vida de fondo: transeúntes lejanos y bandadas de pájaros
+      const rngV = new IH.Azar(this.ancho);
+      this.transeuntes = [];
+      if (d.transeuntes) {
+        const tr = d.transeuntes;
+        const capa = this.capas[tr.capa];
+        for (let i = 0; i < (tr.n || 16); i++) {
+          this.transeuntes.push({
+            x: rngV.rango(0, capa.lz.w), y: tr.y + rngV.entero(-1, 1), v: rngV.rango(6, 16) * (rngV.prob(0.5) ? 1 : -1),
+            ropa: rngV.elegir(tr.ropas || ['#6a5a4a', '#4a5a6a', '#7a4a3a', '#8a7a5a', '#5a4a5a']), tocado: rngV.elegir(['#d8d0bc', '#c8b898', '#5a3a4a']), f: rngV.rango(0, 6), carga: rngV.prob(0.2),
+          });
+        }
+      }
+      this.aves = [];
+      this.tAves = 2;
       // cámara
       this.cam = { x: 0, y: 0, sacudida: 0, objetivo: null, mirada: 0, vel: 5 };
       // jugador
@@ -541,12 +556,14 @@
       IH.subpixel.y = camY - cy;
       const M = IH.MARGEN;
       // fondo
-      for (const capa of this.capas) {
-        if (capa.delante) continue;
+      this.capas.forEach((capa, i) => {
+        if (capa.delante) return;
         const px = -Math.round(camX * capa.factor);
         const py = -Math.round(camY * (capa.fy != null ? capa.fy : capa.factor));
         ctx.drawImage(capa.lz.c, px, py);
-      }
+        if (i === 0) this.dibujarAves(ctx);
+        if (this.def.transeuntes && i === this.def.transeuntes.capa) this.dibujarTranseuntes(ctx, camX, camY);
+      });
       if (this.def.dibujarFondo) this.def.dibujarFondo(this, ctx, cx, cy);
       // entidades (por capas)
       const lista = this.entidades.slice().sort((a, b) => a.capa - b.capa);
@@ -575,6 +592,62 @@
         ctx.fillRect(-M, -M, IH.ANCHO + M * 2, IH.ALTO + M * 2);
         ctx.globalAlpha = 1;
         ctx.globalCompositeOperation = 'source-over';
+      }
+    }
+
+    dibujarTranseuntes(ctx, camX, camY) {
+      const d = this.def;
+      const t = this.tiempo;
+      if (d.transeuntes && this.transeuntes.length) {
+        const tr = d.transeuntes;
+        const capa = this.capas[tr.capa];
+        const W = capa.lz.w;
+        const ox = -Math.round(camX * capa.factor), oy = -Math.round(camY * (capa.fy != null ? capa.fy : capa.factor));
+        const bruma = tr.bruma || '#e4d3b2';
+        for (const p of this.transeuntes) {
+          const x = Math.round((((p.x + t * p.v) % W) + W) % W) + ox;
+          if (x < -6 || x > IH.ANCHO + 6) continue;
+          const y = p.y + oy;
+          const paso = Math.floor(t * 6 + p.f) % 2;
+          const ropa = U.mezclar(p.ropa, bruma, 0.35), cara = U.mezclar('#8a5a3a', bruma, 0.35), toc = U.mezclar(p.tocado, bruma, 0.35);
+          ctx.fillStyle = ropa;
+          ctx.fillRect(x - 1, y - 6, 3, 5);
+          ctx.fillRect(x - 1 + (paso ? -1 : 1), y - 1, 1, 1);
+          ctx.fillRect(x + (paso ? 1 : -1) + 0, y - 1, 1, 1);
+          ctx.fillStyle = cara;
+          ctx.fillRect(x - 1, y - 8, 2, 2);
+          ctx.fillStyle = toc;
+          ctx.fillRect(x - 1, y - 9, 3, 1);
+          if (p.carga) {
+            ctx.fillStyle = U.mezclar('#a8703a', bruma, 0.35);
+            ctx.fillRect(x - 1, y - 11, 3, 2);
+          }
+        }
+      }
+    }
+
+    dibujarAves(ctx) {
+      const d = this.def;
+      const t = this.tiempo;
+      if (d.aves) {
+        this.tAves -= IH.PASO;
+        if (this.tAves <= 0) {
+          this.tAves = U.lerp(6, 14, Math.random());
+          const dir = Math.random() < 0.5 ? 1 : -1;
+          const n = 3 + Math.floor(Math.random() * 5);
+          const y0 = U.lerp(40, 140, Math.random());
+          for (let i = 0; i < n; i++) this.aves.push({ x: dir > 0 ? -20 - i * 9 : IH.ANCHO + 20 + i * 9, y: y0 + Math.abs(i - n / 2) * 4, v: dir * U.lerp(28, 40, Math.random()), f: Math.random() * 6 });
+        }
+        ctx.fillStyle = d.aves === true ? '#3a2e2e' : d.aves;
+        for (const a of this.aves) {
+          a.x += a.v * IH.PASO;
+          const ala = Math.floor(t * 7 + a.f) % 2;
+          const x = Math.round(a.x), y = Math.round(a.y + Math.sin(t * 1.3 + a.f) * 2);
+          ctx.fillRect(x - 2, y - ala, 2, 1);
+          ctx.fillRect(x, y, 1, 1);
+          ctx.fillRect(x + 1, y - ala, 2, 1);
+        }
+        this.aves = this.aves.filter((a) => a.x > -60 && a.x < IH.ANCHO + 60);
       }
     }
 
