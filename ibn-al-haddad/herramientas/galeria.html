@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Galería de sprites</title>
+<style>body{background:#2a2420;color:#eee;font:12px monospace;margin:8px} canvas{image-rendering:pixelated;background:#8a7a62;margin:2px} .fila{display:flex;flex-wrap:wrap;align-items:flex-end} h3{margin:6px 0 2px}</style>
+</head><body>
+<canvas id="pantalla" style="display:none"></canvas>
+<div id="salida"></div>
+<script src="../js/motor/nucleo.js"></script>
+<script src="../js/arte/esqueleto.js"></script>
+<script src="../js/arte/animaciones.js"></script>
+<script src="../js/arte/personajes.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const ids = (params.get('ids') || Object.keys(IH.TRAJES).join(',')).split(',');
+const anims = params.get('anims') ? params.get('anims').split(',') : null;
+const zoom = +(params.get('zoom') || 3);
+const sal = document.getElementById('salida');
+for (const id of ids) {
+  const t0 = performance.now();
+  const spr = IH.sprite(id);
+  const h = document.createElement('h3'); h.textContent = id + ' (' + Math.round(performance.now()-t0) + ' ms)'; sal.appendChild(h);
+  const fila = document.createElement('div'); fila.className='fila'; sal.appendChild(fila);
+  for (const an of (anims || Object.keys(spr.anims))) {
+    const a = spr.anims[an]; if (!a) continue;
+    const todos = params.get('todos');
+    const lista = todos ? a.marcos.map((m,i)=>i) : [0, Math.floor(a.marcos.length/2)].filter((v,i,arr)=>arr.indexOf(v)===i);
+    for (const i of lista) {
+      const c = document.createElement('canvas'); c.width = 80; c.height = 80;
+      c.style.width = 80*zoom+'px'; c.style.height = 80*zoom+'px';
+      const x = c.getContext('2d'); x.imageSmoothingEnabled=false;
+      IH.Esq.dibujarMarco(x, spr, an, i, 40, 74, 1);
+      c.title = an + ' ' + i;
+      fila.appendChild(c);
+    }
+  }
+}
+document.title = 'listo';
+</script></body></html>

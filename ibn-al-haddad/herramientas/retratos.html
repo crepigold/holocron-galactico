@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Retratos</title>
+<style>body{background:#222;margin:0}</style></head><body>
+<canvas id="pantalla" style="display:none"></canvas>
+<canvas id="c" width="1800" height="1000"></canvas>
+<script src="../js/motor/nucleo.js"></script>
+<script src="../js/motor/texto.js"></script>
+<script src="../js/arte/graficos.js"></script>
+<script src="../js/arte/esqueleto.js"></script>
+<script src="../js/arte/animaciones.js"></script>
+<script src="../js/arte/personajes.js"></script>
+<script src="../js/arte/retratos.js"></script>
+<script>
+IH.entrada = { etiqueta: a => a };
+const ctx = document.getElementById('c').getContext('2d');
+const ids = Object.keys(IH.Retratos.EXTRA);
+const emos = (new URLSearchParams(location.search).get('emo') || 'normal').split(',');
+let i = 0;
+for (const id of ids) for (const e of emos) {
+  const x = (i % 9) * 195 + 10, y = Math.floor(i / 9) * 245 + 10;
+  IH.Retratos.dibujar(ctx, id, x, y, 180, { emocion: e });
+  ctx.fillStyle = '#fff'; ctx.font = '14px monospace'; ctx.fillText(id + ' ' + e, x, y + 200);
+  i++;
+}
+document.title = 'listo';
+</script></body></html>

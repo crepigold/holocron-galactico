@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Fondos</title>
+<style>body{background:#111;margin:0} canvas.v{image-rendering:pixelated;width:1280px;height:720px;display:block;margin-bottom:4px}</style>
+</head><body>
+<canvas id="pantalla" style="display:none"></canvas>
+<script src="../js/motor/nucleo.js"></script>
+<script src="../js/arte/graficos.js"></script>
+<script src="../js/arte/fondos.js"></script>
+<script src="../js/arte/esqueleto.js"></script>
+<script src="../js/arte/animaciones.js"></script>
+<script src="../js/arte/personajes.js"></script>
+<script>
+const q = new URLSearchParams(location.search);
+const esc = q.get('escena') || 'cairo', W = +(q.get('ancho') || 2400);
+const camaras = (q.get('cam') || '0').split(',').map(Number);
+const t0 = performance.now();
+const f = IH.Fondos.construir(esc, W, { hora: q.get('hora') || undefined, babZuwayla: q.get('bab') ? +q.get('bab') : undefined });
+console.log('construido en', Math.round(performance.now()-t0), 'ms');
+for (const cam of camaras) {
+  const c = document.createElement('canvas'); c.className='v'; c.width = 640; c.height = 360; document.body.appendChild(c);
+  const x = c.getContext('2d'); x.imageSmoothingEnabled = false;
+  for (const capa of f.capas) {
+    if (capa.delante) continue;
+    x.drawImage(capa.lz.c, -Math.round(cam * capa.factor), 0);
+  }
+  if (q.get('pj')) { const spr = IH.sprite(q.get('pj')); IH.Esq.dibujarMarco(x, spr, 'quieto', 0, 320, f.suelo, 1); IH.Esq.dibujarMarco(x, IH.sprite('ibrahim'), 'quieto', 0, 380, f.suelo, -1); }
+  for (const capa of f.capas) if (capa.delante) x.drawImage(capa.lz.c, -Math.round(cam * capa.factor), 0);
+}
+document.title = 'listo';
+</script></body></html>

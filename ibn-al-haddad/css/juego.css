@@ -1,0 +1,21 @@
+@font-face { font-family: 'Alegreya'; src: url('../fuentes/Alegreya.ttf') format('truetype'); font-weight: 400 900; font-style: normal; font-display: block; }
+@font-face { font-family: 'Alegreya'; src: url('../fuentes/Alegreya-Italic.ttf') format('truetype'); font-weight: 400 900; font-style: italic; font-display: block; }
+@font-face { font-family: 'Reem Kufi'; src: url('../fuentes/ReemKufi.ttf') format('truetype'); font-weight: 400 700; font-display: block; }
+@font-face { font-family: 'Aref Ruqaa'; src: url('../fuentes/ArefRuqaa-Bold.ttf') format('truetype'); font-weight: 400 700; font-display: block; }
+@font-face { font-family: 'Amiri'; src: url('../fuentes/Amiri-Regular.ttf') format('truetype'); font-display: block; }
+
+html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+body { cursor: default; user-select: none; -webkit-user-select: none; touch-action: none; }
+body.sin-cursor { cursor: none; }
+#pantalla { display: block; position: fixed; inset: 0; width: 100vw; height: 100vh; }
+#carga {
+  position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: #0b0705; color: #d4a73a; font-family: 'Reem Kufi', Georgia, serif; letter-spacing: 0.3em;
+  transition: opacity 0.8s ease; z-index: 2;
+}
+#carga .ar { font-family: 'Aref Ruqaa', serif; font-size: 64px; letter-spacing: 0; margin-bottom: 8px; }
+#carga .la { font-size: 22px; opacity: 0.8; }
+#carga .barra { margin-top: 28px; width: 240px; height: 2px; background: rgba(212,167,58,0.2); overflow: hidden; }
+#carga .barra i { display: block; height: 100%; width: 30%; background: #d4a73a; animation: cargando 1.4s ease-in-out infinite; }
+@keyframes cargando { 0% { transform: translateX(-100%); } 100% { transform: translateX(340%); } }
+#carga.oculto { opacity: 0; pointer-events: none; }
