@@ -452,6 +452,13 @@
       } else if (!this.sub) {
         ctx.save();
         ctx.globalAlpha = Math.min(1, this.tMenu * 3);
+        const alto = this.lista.items.length * 70 + 70;
+        const g = ctx.createLinearGradient(IH.UIW / 2 - 420, 0, IH.UIW / 2 + 420, 0);
+        g.addColorStop(0, 'rgba(8,5,4,0)');
+        g.addColorStop(0.5, 'rgba(8,5,4,0.62)');
+        g.addColorStop(1, 'rgba(8,5,4,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(IH.UIW / 2 - 420, 560, 840, alto);
         this.lista.dibujar(ctx, IH.UIW / 2, 620, { tam: 46, alto: 70, ancho: 640 });
         ctx.restore();
       }
