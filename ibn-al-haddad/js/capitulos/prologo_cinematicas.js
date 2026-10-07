@@ -304,7 +304,8 @@
       IH.desbloquearCronica('mongoles');
       IH.partida.banderas.prologoCompletado = true;
       IH.logro('PROLOGO');
-      IH.guardar();
+      // el Prólogo termina aquí: las crónicas y los logros se conservan aparte
+      IH.borrarPartida();
       IH.cambiarEscena('titulo', { creditos: true, directo: true }, { fundido: 2 });
     },
   };

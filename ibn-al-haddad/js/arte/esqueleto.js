@@ -123,6 +123,7 @@
   }
 
   // ------------------------------------------------------------------ pintor con registro de paleta
+  const cachePatrones = new Map();
   class Pintor {
     constructor(x) {
       this.x = x;
@@ -197,23 +198,34 @@
     patron(c1, c2, tipo) {
       this.color(c1);
       this.color(c2);
-      const t = IH.lienzo(4, 4);
-      t.x.fillStyle = c1;
-      t.x.fillRect(0, 0, 4, 4);
-      t.x.fillStyle = c2;
-      if (tipo === 'malla') {
-        for (let yy = 0; yy < 4; yy++) for (let xx = 0; xx < 4; xx++) if ((xx + yy * 2) % 4 === 0 || (xx + 2 + yy * 2) % 4 === 0 && yy % 2) t.x.fillRect(xx, yy, 1, 1);
-      } else if (tipo === 'laminar') {
-        t.x.fillRect(0, 2, 4, 1);
-        t.x.fillRect(1, 0, 1, 2);
-        t.x.fillRect(3, 3, 1, 1);
-      } else if (tipo === 'rayas') {
-        t.x.fillRect(0, 0, 4, 2);
-      } else if (tipo === 'acolchado') {
-        t.x.fillRect(0, 0, 1, 4);
-        t.x.fillRect(2, 0, 1, 4);
+      const clave = c1 + c2 + tipo;
+      let t = cachePatrones.get(clave);
+      if (!t) {
+        t = IH.lienzo(4, 4);
+        t.x.fillStyle = c1;
+        t.x.fillRect(0, 0, 4, 4);
+        t.x.fillStyle = c2;
+        if (tipo === 'malla') {
+          for (let yy = 0; yy < 4; yy++) for (let xx = 0; xx < 4; xx++) if ((xx + yy * 2) % 4 === 0 || ((xx + 2 + yy * 2) % 4 === 0 && yy % 2)) t.x.fillRect(xx, yy, 1, 1);
+        } else if (tipo === 'laminar') {
+          t.x.fillRect(0, 2, 4, 1);
+          t.x.fillRect(1, 0, 1, 2);
+          t.x.fillRect(3, 3, 1, 1);
+        } else if (tipo === 'rayas') {
+          t.x.fillRect(0, 0, 4, 2);
+        } else if (tipo === 'acolchado') {
+          t.x.fillRect(0, 0, 1, 4);
+          t.x.fillRect(2, 0, 1, 4);
+        }
+        cachePatrones.set(clave, t);
       }
-      return this.x.createPattern(t.c, 'repeat');
+      let pat = this.patrones && this.patrones.get(clave);
+      if (!pat) {
+        pat = this.x.createPattern(t.c, 'repeat');
+        if (!this.patrones) this.patrones = new Map();
+        this.patrones.set(clave, pat);
+      }
+      return pat;
     }
   }
 
@@ -894,27 +906,17 @@
     return fr;
   }
 
-  // Hornea todas las animaciones de un traje en una hoja de sprites
-  function hornear(traje, anims, nombres) {
-    const lista = nombres || Object.keys(anims);
-    const marcos = [];
-    const res = { anims: {}, fw: FW, fh: FH, ax: AX, ay: AY, traje };
-    for (const nom of lista) {
-      const def = anims[nom];
-      if (!def) continue;
-      const fr = expandir(def);
-      res.anims[nom] = { marcos: [], bucle: def.bucle !== false && !!def.ciclo, total: 0, sig: def.sig || null };
-      if (def.bucle === true) res.anims[nom].bucle = true;
-      for (const f of fr) {
-        marcos.push({ anim: nom, pose: f.pose, d: f.d, ev: f.ev });
-      }
-    }
-    const cols = 16;
-    const filas = Math.ceil(marcos.length / cols);
+  // Hornea una animación (todas sus poses) en una tira de sprites, con su versión blanca
+  let lzTrabajo = null;
+  function hornearAnim(traje, def) {
+    const fr = expandir(def);
+    const cols = Math.min(16, Math.max(1, fr.length));
+    const filas = Math.ceil(fr.length / cols);
     const hoja = IH.lienzo(cols * FW, Math.max(1, filas) * FH);
-    const blanca = IH.lienzo(cols * FW, Math.max(1, filas) * FH);
-    const lz = IH.lienzo(FW, FH, true);
-    marcos.forEach((m, i) => {
+    if (!lzTrabajo) lzTrabajo = IH.lienzo(FW, FH, true);
+    const lz = lzTrabajo;
+    const a = { marcos: [], bucle: def.bucle === true || (def.bucle !== false && !!def.ciclo), total: 0, sig: def.sig || null };
+    fr.forEach((m, i) => {
       lz.x.clearRect(0, 0, FW, FH);
       lz.x.save();
       lz.x.translate(AX, AY);
@@ -922,21 +924,48 @@
       P.color(traje.piel);
       dibujarPersonaje(P, traje, m.pose);
       lz.x.restore();
-      lz.x.imageSmoothingEnabled = false;
       procesar(lz, P.paleta, { contorno: traje.contorno, luz: traje.luz });
       const sx = (i % cols) * FW, sy = Math.floor(i / cols) * FH;
       hoja.x.drawImage(lz.c, sx, sy);
-      const a = res.anims[m.anim];
       a.marcos.push({ sx, sy, d: m.d, ev: m.ev });
       a.total += m.d;
     });
-    // versión blanca para el destello de impacto
+    const blanca = IH.lienzo(hoja.w, hoja.h);
     blanca.x.drawImage(hoja.c, 0, 0);
     blanca.x.globalCompositeOperation = 'source-in';
     blanca.x.fillStyle = '#fff6e6';
     blanca.x.fillRect(0, 0, blanca.w, blanca.h);
-    res.hoja = hoja.c;
-    res.blanca = blanca.c;
+    a.hoja = hoja.c;
+    a.blanca = blanca.c;
+    return a;
+  }
+
+  // Prepara el sprite de un traje: cada animación se hornea la primera vez que se usa
+  function hornear(traje, anims, nombres) {
+    const lista = (nombres || Object.keys(anims)).filter((n) => anims[n]);
+    const res = { fw: FW, fh: FH, ax: AX, ay: AY, traje };
+    const cocidas = {};
+    const tiene = (nom) => typeof nom === 'string' && lista.includes(nom);
+    res.anims = new Proxy(cocidas, {
+      get(t, nom) {
+        if (t[nom]) return t[nom];
+        if (!tiene(nom)) return undefined;
+        t[nom] = hornearAnim(traje, anims[nom]);
+        return t[nom];
+      },
+      has(t, nom) {
+        return tiene(nom);
+      },
+      ownKeys() {
+        return lista.slice();
+      },
+      getOwnPropertyDescriptor(t, nom) {
+        if (!tiene(nom)) return undefined;
+        return { enumerable: true, configurable: true, writable: true, value: res.anims[nom] };
+      },
+    });
+    // la pose de reposo se hornea ya, para que el primer fotograma no espere
+    if (lista.includes('quieto')) res.anims.quieto;
     return res;
   }
 
@@ -945,7 +974,7 @@
     const a = spr.anims[anim];
     if (!a || !a.marcos.length) return;
     const m = a.marcos[Math.max(0, Math.min(a.marcos.length - 1, i))];
-    const img = opc.blanco ? spr.blanca : spr.hoja;
+    const img = opc.blanco ? a.blanca : a.hoja;
     const px = Math.round(x), py = Math.round(y);
     if (opc.alfa != null) ctx.globalAlpha = opc.alfa;
     if (dir >= 0) {
