@@ -116,6 +116,7 @@
         ibr.animForzada = 'senalar';
         const r = yield zz.minijuego(IH.Minijuegos.Martillo, { golpes: 5 });
         IH.partida.banderas.calidadHoja = r;
+        if (r >= 0.93) IH.logro('FORJA_MAESTRA');
         zz.bandera('forjado', true);
         zz.jugador.poner('quieto');
         yield 0.4;
@@ -248,13 +249,13 @@
       // carro volcado y cajas que cortan la calle: hay que pasar por arriba
       { x: 1641, y: 282, w: 18, h: 18 },
       { x: 1659, y: 266, w: 18, h: 34 },
-      { x: 1750, y: 222, w: 100, h: 78 },
+      { x: 1750, y: 230, w: 100, h: 70 },
       { x: 1950, y: 236, w: 90, h: 64 },
       { x: 2040, y: 282, w: 18, h: 18 },
     ],
     plataformas: [
       { x: 1686, y: 254, w: 50 },
-      { x: 1866, y: 206, w: 64 },
+      { x: 1866, y: 210, w: 64 },
       { x: 2060, y: 262, w: 48 },
     ],
     salidas: [
@@ -267,8 +268,8 @@
       z.objeto({ tipo: 'cajas', x: 1650, w: 18, h: 18 });
       z.objeto({ tipo: 'cajas', x: 1668, w: 18, h: 34 });
       z.objeto({ tipo: 'toldoPlat', x: 1711, y: 254, w: 50, color: '#2f5a8a' });
-      z.objeto({ tipo: 'tejado', x: 1800, y: 222, w: 100, color: '#cdb08a' });
-      z.objeto({ tipo: 'balcon', x: 1898, y: 206, w: 64 });
+      z.objeto({ tipo: 'tejado', x: 1800, y: 230, w: 100, color: '#cdb08a' });
+      z.objeto({ tipo: 'balcon', x: 1898, y: 210, w: 64 });
       z.objeto({ tipo: 'tejado', x: 1995, y: 236, w: 90, color: '#c49c80' });
       z.objeto({ tipo: 'cajas', x: 2049, w: 18, h: 18 });
       z.objeto({ tipo: 'toldoPlat', x: 2084, y: 262, w: 48, color: '#c9a227' });
@@ -345,6 +346,7 @@
         ]);
         IH.desbloquearCronica('saladino');
         IH.desbloquearCronica('cuentacuentos');
+        IH.logro('VECINO_CURIOSO');
       })();
       const musico = z.pnj({ traje: 'musico', x: 1150, dir: 1, anim: 'tocarOud', mirar: false, etiqueta: 'Escuchar' });
       musico.alHablar = [['narrador', 'El músico improvisa un *taqsim* en el maqam bayati. Las notas se cuelan entre el ruido del mercado como el agua entre las piedras.']];
@@ -376,7 +378,7 @@
         })() });
       }
       cronica(z, 'al_qahira', 250);
-      cronica(z, 'qasaba', 1906, 206);
+      cronica(z, 'qasaba', 1906, 210);
       cronica(z, 'bab_zuwayla', PUERTA - 60);
     },
     disparadores: [
@@ -443,11 +445,11 @@
     yield* saltar(z, amr, 1668, 266);
     yield* saltar(z, amr, 1704, 254);
     yield cerca(60);
-    yield* saltar(z, amr, 1765, 222, 0.5, 30);
+    yield* saltar(z, amr, 1765, 230, 0.5, 28);
     yield amr.irA(1835, { vel: 110, anim: 'correr' });
     yield cerca(70);
     burla('¡Ni los mamelucos me pillan a mí!');
-    yield* saltar(z, amr, 1880, 206, 0.5, 26);
+    yield* saltar(z, amr, 1880, 210, 0.5, 24);
     yield amr.irA(1920, { vel: 110, anim: 'correr' });
     yield cerca(60);
     yield* saltar(z, amr, 1968, 236, 0.5, 18);

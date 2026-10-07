@@ -83,6 +83,7 @@
       },
       {
         lamina: 'sultan',
+        estilo: 'arriba',
         musica: 'cronista',
         ambiente: 'interior',
         camara: { x0: 0, x1: 60 },
@@ -135,6 +136,7 @@
     planos: [
       {
         lamina: 'columna',
+        estilo: 'arriba',
         camara: { x0: 80, x1: 260 },
         rotulo: 'Bab al-Futuh',
         rotuloSub: 'Noviembre de 1249',
@@ -167,6 +169,7 @@
       },
       {
         lamina: 'sultan',
+        estilo: 'arriba',
         musica: 'despedida',
         ambiente: 'interior',
         camara: { x0: 80, x1: 40 },
@@ -237,6 +240,7 @@
     planos: [
       {
         lamina: 'ruinas',
+        estilo: 'arriba',
         camara: { x0: 0, x1: 160 },
         rotulo: 'Mansura',
         rotuloSub: 'La tarde del 8 de febrero de 1250',
@@ -297,6 +301,7 @@
     siguiente() {
       IH.desbloquearCronica('mongoles');
       IH.partida.banderas.prologoCompletado = true;
+      IH.logro('PROLOGO');
       IH.guardar();
       IH.cambiarEscena('titulo', { creditos: true, directo: true }, { fundido: 2 });
     },

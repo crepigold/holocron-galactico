@@ -1061,7 +1061,7 @@
       for (const c of this.capas) if (!c.delante) ctx.drawImage(c.lz.c, -Math.round(fx * c.factor), -cy);
       // oscuridad nocturna con hogueras
       ctx.globalCompositeOperation = 'multiply';
-      ctx.fillStyle = '#5a6488';
+      ctx.fillStyle = '#8a94b8';
       ctx.fillRect(-2, -2, IH.ANCHO + 4, IH.ALTO + 4);
       ctx.globalCompositeOperation = 'lighter';
       for (let i = 0; i < 8; i++) {

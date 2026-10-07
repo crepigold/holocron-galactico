@@ -528,6 +528,7 @@
     ]);
     const r = yield z.eleccion('Thibaut de Clermont aguarda, de rodillas.', ['Perdonarle la vida', 'Darle el golpe de gracia']);
     IH.partida.banderas.thibautPerdonado = r === 0;
+    if (r === 0) IH.logro('PIEDAD');
     if (r === 0) {
       z.jugador.poner('quieto');
       yield z.dialogo([

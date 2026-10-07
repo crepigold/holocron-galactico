@@ -216,7 +216,17 @@
         if (this.fase === 'salida') a = 1 - U.suave(this.tSalida / 0.9);
         ctx.save();
         ctx.globalAlpha = a;
-        if (estilo === 'centro') {
+        if (estilo === 'arriba') {
+          const tam = 46;
+          const alto = T.medirAlto(ctx, l, 1500, tam, { cursiva: true, interlineado: 1.42 });
+          const g = ctx.createLinearGradient(0, 0, 0, 200 + alto);
+          g.addColorStop(0, 'rgba(0,0,0,0.8)');
+          g.addColorStop(0.65, 'rgba(0,0,0,0.55)');
+          g.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, IH.UIW, 200 + alto);
+          T.parrafo(ctx, l, IH.UIW / 2, 150, { tam, ancho: 1500, alinear: 'center', cursiva: true, visibles: Math.floor(this.visibles), interlineado: 1.42 });
+        } else if (estilo === 'centro') {
           T.parrafo(ctx, l, IH.UIW / 2, IH.UIH / 2 - T.medirAlto(ctx, l, 1300, 50, { cursiva: true }) / 2 - 30, { tam: 50, ancho: 1300, alinear: 'center', cursiva: true, visibles: Math.floor(this.visibles), interlineado: 1.45 });
         } else {
           const tam = 46;
@@ -244,8 +254,9 @@
         if (a > 0) {
           ctx.save();
           ctx.globalAlpha = a;
-          T.linea(ctx, p.rotulo, 110, 200, { tam: 44, familia: T.TITULO, color: T.COLORES.oroClaro, espaciado: 3 });
-          if (p.rotuloSub) T.linea(ctx, p.rotuloSub, 112, 252, { tam: 34, cursiva: true, color: T.COLORES.texto });
+          const ry = p.estilo === 'arriba' ? IH.UIH - 230 : 200;
+          T.linea(ctx, p.rotulo, 110, ry, { tam: 44, familia: T.TITULO, color: T.COLORES.oroClaro, espaciado: 3 });
+          if (p.rotuloSub) T.linea(ctx, p.rotuloSub, 112, ry + 52, { tam: 34, cursiva: true, color: T.COLORES.texto });
           ctx.restore();
         }
       }

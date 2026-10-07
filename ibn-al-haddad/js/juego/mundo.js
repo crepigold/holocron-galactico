@@ -644,6 +644,21 @@
         Tx.parrafo(ctx, b.texto, ux, uy - h - 6, { tam: 30, ancho: w - 40, alinear: 'center', cursiva: true, interlineado: 1.25, sombra: false });
         ctx.restore();
       }
+      // barras de vida de los enemigos heridos
+      if (!ocultarHud) {
+        for (const e of this.enemigos) {
+          if (e === this.jefe || e.estado === 'muerto' || e.vida >= e.vidaMax || !e.visible) continue;
+          const a = U.clamp(3 - (e.tSinGolpe || 0), 0, 1);
+          if (a <= 0) continue;
+          const [ux, uy] = this.aUI(e.x, e.y - e.h - 16);
+          ctx.globalAlpha = a;
+          ctx.fillStyle = 'rgba(10,6,4,0.8)';
+          ctx.fillRect(ux - 42, uy - 4, 84, 11);
+          ctx.fillStyle = '#c8402a';
+          ctx.fillRect(ux - 40, uy - 2, 80 * Math.max(0, e.vida / e.vidaMax), 7);
+          ctx.globalAlpha = 1;
+        }
+      }
       // textos flotantes
       for (const t of this.textos) {
         const [ux, uy] = this.aUI(t.x, t.y);

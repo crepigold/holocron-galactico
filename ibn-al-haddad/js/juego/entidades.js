@@ -526,6 +526,7 @@
           this.critico = 1.6;
           IH.entrada.vibrar(0.6, 140);
           if (IH.partida) IH.partida.estadisticas.paradas = (IH.partida.estadisticas.paradas || 0) + 1;
+          if (IH.logro) IH.logro('PRIMERA_PARADA');
           return 'parada';
         }
         const coste = g.dano * 1.6 + (g.rompeGuardia ? 40 : 0);

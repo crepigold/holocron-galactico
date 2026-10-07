@@ -116,6 +116,26 @@
     IH.audio.sfx('pergamino');
     IH.audio.estribillo('cronica');
     IH.notificar('Crónica: ' + c.titulo + (nueva ? '  ·  léela en el menú' : ''), { vida: 4.5 });
+    if (Object.keys(IH.CRONICAS).every((k) => todas.has(k))) IH.logro('CRONISTA');
+  };
+
+  // ------------------------------------------------------------------ logros (Steam si está disponible)
+  IH.LOGROS = {
+    FORJA_MAESTRA: 'Maestro herrero: forja una hoja perfecta',
+    PRIMERA_PARADA: 'Paciencia: consigue tu primera parada',
+    VECINO_CURIOSO: 'Vecino curioso: escucha al cuentacuentos',
+    PIEDAD: 'Piedad: perdona la vida al templario',
+    PROLOGO: 'El hijo del herrero: termina el Prólogo',
+    CRONISTA: 'Cronista: descubre todas las crónicas del Prólogo',
+  };
+  const CLAVE_LOGROS = 'ibn-al-haddad.logros.v1';
+  IH.logro = function (id) {
+    const hechos = new Set(leer(CLAVE_LOGROS) || []);
+    if (hechos.has(id)) return;
+    hechos.add(id);
+    escribir(CLAVE_LOGROS, [...hechos]);
+    if (window.electronAPI && window.electronAPI.logro) window.electronAPI.logro(id);
+    if (IH.LOGROS[id]) IH.notificar('Logro · ' + IH.LOGROS[id], { vida: 5 });
   };
 
   // Pantalla completa (navegador o Electron)

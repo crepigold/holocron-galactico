@@ -1,0 +1,35 @@
+{
+  "name": "ibn-al-haddad",
+  "productName": "Ibn al-Haddad",
+  "version": "0.1.0",
+  "description": "Ibn al-Haddad — El hijo del herrero. Aventura de acción 2D en el Egipto de 1249.",
+  "main": "electron/main.js",
+  "private": true,
+  "author": "crepigold",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "electron .",
+    "web": "npx http-server -p 8080 -c-1 .",
+    "probar": "node herramientas/probar.js",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux",
+    "dist:mac": "electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3"
+  },
+  "optionalDependencies": {
+    "steamworks.js": "^0.4.0"
+  },
+  "build": {
+    "appId": "com.crepigold.ibnalhaddad",
+    "productName": "Ibn al-Haddad",
+    "files": ["index.html", "css/**", "js/**", "fuentes/**", "electron/**", "package.json"],
+    "directories": { "output": "dist" },
+    "win": { "target": "dir" },
+    "linux": { "target": "dir" },
+    "mac": { "target": "dir" }
+  }
+}
