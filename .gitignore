@@ -1,1 +1,5 @@
 .claude/
+Sethur_TerrariaMod/**/obj/
+Sethur_TerrariaMod/**/bin/
+__pycache__/
+*.pyc

@@ -1,0 +1,120 @@
+Mods: {
+	ForgottenPharaoh: {
+		NPCs: {
+			SethurBoss: {
+				DisplayName: Sethur, el Faraón Olvidado
+			}
+		}
+
+		Bestiary: {
+			SethurBoss: Antiguo soberano del desierto, sellado bajo las arenas por desafiar a los dioses. Ahora su tumba se ha roto y el desierto vuelve a obedecerle.
+		}
+
+		Messages: {
+			SethurAwakens: ¡Sethur, el Faraón Olvidado, despierta de su tumba!
+			SethurPhase2: ¡La tormenta del desierto obedece a Sethur!
+			SethurPhase3: ¡El halo solar de Sethur arde: comienza el juicio solar!
+			SethurPhase4: ¡Sethur se alza como el dios olvidado!
+		}
+
+		Items: {
+			SethurSummon: {
+				DisplayName: Ídolo del Faraón Olvidado
+				Tooltip:
+					'''
+					Invoca a Sethur, el Faraón Olvidado
+					Se puede usar a cualquier hora, sin requisitos
+					'''
+			}
+			SethurBossBag: {
+				DisplayName: Bolsa del tesoro (Sethur)
+				Tooltip: '{$CommonItemTooltip.RightClickToOpen}'
+			}
+			SethurMask: {
+				DisplayName: Máscara de Sethur
+				Tooltip: ""
+			}
+			DesertStaff: {
+				DisplayName: Bastón del Desierto
+				Tooltip:
+					'''
+					Invoca un Espíritu de Arena que dispara a tus enemigos
+					'''
+			}
+			PharaohSickle: {
+				DisplayName: Hoz del Faraón
+				Tooltip:
+					'''
+					Cada golpe lanza una onda creciente dorada
+					'''
+			}
+			SolarDisc: {
+				DisplayName: Disco Solar
+				Tooltip:
+					'''
+					Un disco ardiente que vuelve a tu mano
+					'''
+			}
+			RoyalFragment: {
+				DisplayName: Fragmento Real
+				Tooltip: Un fragmento de la gloria del Faraón Olvidado
+			}
+			RoyalAmulet: {
+				DisplayName: Amuleto Real
+				Tooltip:
+					'''
+					Aumenta el daño un 6% y la probabilidad de crítico un 4%
+					'''
+			}
+		}
+
+		Buffs: {
+			SandSpiritBuff: {
+				DisplayName: Espíritu de Arena
+				Description: Un espíritu del desierto combatirá a tu lado
+			}
+		}
+
+		Projectiles: {
+			SethurSandColumn: {
+				DisplayName: Columna de arena
+			}
+			SethurSandHand: {
+				DisplayName: Mano del desierto
+			}
+			SethurTornado: {
+				DisplayName: Tornado de arena
+			}
+			SethurSolarDisc: {
+				DisplayName: Disco solar
+			}
+			SethurSolarBeam: {
+				DisplayName: Rayo de juicio
+			}
+			SethurSolarBlast: {
+				DisplayName: Explosión solar
+			}
+			SethurObelisk: {
+				DisplayName: Obelisco flotante
+			}
+			SethurObeliskBolt: {
+				DisplayName: Descarga del obelisco
+			}
+			SethurClawSlash: {
+				DisplayName: Zarpazo del faraón
+			}
+			PharaohSickleWave: {
+				DisplayName: Onda de la hoz
+			}
+			SolarDiscProjectile: {
+				DisplayName: Disco Solar
+			}
+			SandSpiritMinion: {
+				DisplayName: Espíritu de Arena
+			}
+			SandSpiritBolt: {
+				DisplayName: Proyectil de arena
+			}
+		}
+	}
+}

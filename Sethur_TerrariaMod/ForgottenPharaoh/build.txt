@@ -1,0 +1,9 @@
+displayName = Sethur, el Faraón Olvidado
+author = crepigold
+version = 1.0.0
+homepage = 
+hideCode = false
+hideResources = false
+includeSource = true
+side = Both
+buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*, Properties\*

@@ -1,0 +1,15 @@
+Sethur, el Faraón Olvidado - Un jefe de dificultad Hardmode invocable desde el primer minuto de la partida.
+
+Crea el Ídolo del Faraón Olvidado con 5 bloques de madera en una mesa de trabajo y desafía al antiguo soberano del desierto:
+columnas de arena, manos del desierto, tornados, discos y rayos solares, obeliscos flotantes y explosiones solares
+en 4 fases de combate telegrafiadas y sincronizadas en multijugador.
+
+Recompensas: Máscara de Sethur, Bastón del Desierto (invocación), Hoz del Faraón (cuerpo a cuerpo),
+Disco Solar (a distancia), Fragmento Real (material) y Amuleto Real.
+
+---
+Sethur, the Forgotten Pharaoh - A Hardmode-tier boss you can summon from the very start of a world.
+
+Craft the Idol of the Forgotten Pharaoh from 5 wood blocks at a Work Bench and face the ancient lord of the desert in a
+4-phase, telegraphed, multiplayer-synced fight. Drops: Sethur's Mask, Desert Staff, Pharaoh's Sickle, Solar Disc,
+Royal Fragment and Royal Amulet.

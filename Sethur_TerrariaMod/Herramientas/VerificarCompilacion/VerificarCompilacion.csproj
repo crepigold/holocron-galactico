@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Comprobación de compilación SIN tModLoader instalado: compila todos los .cs del mod contra una API "stub"
+    (Stubs/*.cs) que reproduce las firmas de tModLoader/Terraria/XNA que usa el mod. Sirve para detectar errores
+    de sintaxis, tipos, variables y sobrecargas. NO sustituye a compilar con tModLoader real (ver README).
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>ForgottenPharaohCheck</AssemblyName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>CS0649;CS0169;CS0414;CS8981</NoWarn>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\ForgottenPharaoh\**\*.cs" Exclude="..\..\ForgottenPharaoh\obj\**;..\..\ForgottenPharaoh\bin\**" />
+    <Compile Include="Stubs\**\*.cs" />
+    <Compile Include="Check\**\*.cs" />
+  </ItemGroup>
+</Project>

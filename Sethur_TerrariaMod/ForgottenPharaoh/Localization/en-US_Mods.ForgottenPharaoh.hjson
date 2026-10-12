@@ -1,0 +1,120 @@
+Mods: {
+	ForgottenPharaoh: {
+		NPCs: {
+			SethurBoss: {
+				DisplayName: Sethur, the Forgotten Pharaoh
+			}
+		}
+
+		Bestiary: {
+			SethurBoss: Ancient ruler of the desert, sealed beneath the sands for defying the gods. Now his tomb has been broken, and the desert obeys him once more.
+		}
+
+		Messages: {
+			SethurAwakens: Sethur, the Forgotten Pharaoh, awakens from his tomb!
+			SethurPhase2: The desert storm obeys Sethur!
+			SethurPhase3: Sethur's solar halo blazes: the solar judgment begins!
+			SethurPhase4: Sethur rises as the forgotten god!
+		}
+
+		Items: {
+			SethurSummon: {
+				DisplayName: Idol of the Forgotten Pharaoh
+				Tooltip:
+					'''
+					Summons Sethur, the Forgotten Pharaoh
+					Can be used at any time, no requirements
+					'''
+			}
+			SethurBossBag: {
+				DisplayName: Treasure Bag (Sethur)
+				Tooltip: '{$CommonItemTooltip.RightClickToOpen}'
+			}
+			SethurMask: {
+				DisplayName: Sethur's Mask
+				Tooltip: ""
+			}
+			DesertStaff: {
+				DisplayName: Desert Staff
+				Tooltip:
+					'''
+					Summons a Sand Spirit to shoot your enemies
+					'''
+			}
+			PharaohSickle: {
+				DisplayName: Pharaoh's Sickle
+				Tooltip:
+					'''
+					Each swing launches a golden crescent wave
+					'''
+			}
+			SolarDisc: {
+				DisplayName: Solar Disc
+				Tooltip:
+					'''
+					A blazing disc that returns to your hand
+					'''
+			}
+			RoyalFragment: {
+				DisplayName: Royal Fragment
+				Tooltip: A fragment of the Forgotten Pharaoh's glory
+			}
+			RoyalAmulet: {
+				DisplayName: Royal Amulet
+				Tooltip:
+					'''
+					Increases damage by 6% and critical strike chance by 4%
+					'''
+			}
+		}
+
+		Buffs: {
+			SandSpiritBuff: {
+				DisplayName: Sand Spirit
+				Description: A desert spirit will fight by your side
+			}
+		}
+
+		Projectiles: {
+			SethurSandColumn: {
+				DisplayName: Sand Column
+			}
+			SethurSandHand: {
+				DisplayName: Desert Hand
+			}
+			SethurTornado: {
+				DisplayName: Sand Tornado
+			}
+			SethurSolarDisc: {
+				DisplayName: Solar Disc
+			}
+			SethurSolarBeam: {
+				DisplayName: Judgment Ray
+			}
+			SethurSolarBlast: {
+				DisplayName: Solar Explosion
+			}
+			SethurObelisk: {
+				DisplayName: Floating Obelisk
+			}
+			SethurObeliskBolt: {
+				DisplayName: Obelisk Bolt
+			}
+			SethurClawSlash: {
+				DisplayName: Pharaoh's Claw
+			}
+			PharaohSickleWave: {
+				DisplayName: Sickle Wave
+			}
+			SolarDiscProjectile: {
+				DisplayName: Solar Disc
+			}
+			SandSpiritMinion: {
+				DisplayName: Sand Spirit
+			}
+			SandSpiritBolt: {
+				DisplayName: Sand Bolt
+			}
+		}
+	}
+}
